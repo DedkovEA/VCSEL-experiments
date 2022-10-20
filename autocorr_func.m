@@ -1,7 +1,7 @@
 function [r, lags] = autocorr_func(data, options)
     arguments
         data (:,1) double 
-        options.maxlag (1,1) int32 {mustBePositive} = length(data)-1
+        options.maxlag (1,1) double {mustBePositive, mustBeInteger} = length(data)-1
         options.method string {mustBeMember(options.method,["matlab","manual"])} = "matlab"
         options.positiveonly logical = false
     end;
