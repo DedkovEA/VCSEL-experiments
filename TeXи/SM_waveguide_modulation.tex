@@ -1,0 +1,295 @@
+% \documentclass[12pt,a4paper]{article}
+\documentclass[12pt, notitlepage]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+
+\usepackage[left=1in, right=1in, top=1in, bottom=1in]{geometry}
+
+\usepackage{titling}
+%\usepackage{lipsum}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{float}
+%\usepackage[margin=2cm]{geometry}
+\usepackage{caption}
+\usepackage{dsfont}
+
+\pretitle{\begin{center}\Huge\bfseries}
+	\posttitle{\par\end{center}\vskip 0.5em}
+\preauthor{\begin{center}\Large\ttfamily}
+	\postauthor{\end{center}}
+\predate{\par\large\centering}
+\postdate{\par}
+
+\title{SM optical fiber}
+\author{Evgeniy Dedkov}
+\date{\today}
+\begin{document}
+	
+	\newcommand{\mcm}{\mathcal{M}}
+	
+	\maketitle
+	\thispagestyle{empty}
+	
+	\begin{abstract}
+		This article consider modulation of SM optic fiber via using differential equations and RK-4 method.
+	\end{abstract}
+	
+	\section{Jones formalism}
+	Consider absolutely polarized EM wave with fixed circular frequency $\omega$. Lets fix laboratory coordinate system and treat all optical elements as positioned on the straight line. Then we need to describe only 2 amplitudes of EM field: $E_x$ and $E_y$. They are complex scalars, changing while light passes through optical elements and medium and form a Jones vector:
+	$$
+	\begin{pmatrix}
+		E_x \\
+		E_y
+	\end{pmatrix}
+	$$
+	
+	Starting from $
+	\begin{pmatrix}
+		E_{x}^0 \\
+		E_{y}^0
+	\end{pmatrix}
+	$ light passes through different optical elements and medium, which can be described as multiplying Jones vector on Jones matricies of those elements:
+	$$
+		\begin{pmatrix}
+		E_{x}^\text{end} \\
+		E_y^\text{end}
+	\end{pmatrix} = \mathcal{M}_N\dots\mathcal{M}_2\mathcal{M}_1\begin{pmatrix}
+	E_{x}^0 \\
+	E_{y}^0
+\end{pmatrix}
+	$$
+	\section{Equation on Jones matrix of SM fiber}
+	Consider single mode optical fiber of length $L$. Let $\mathcal{M}(z)$ be Jones matrix of fiber piece starting from 0 to $z$, $\theta(z)$ - angle between x-axis of lab system and axis of x-mode in fiber, $n_x(z)$, $n_y(z)$~--- refractive indices at coordinate $z$. 
+	
+	Now we will look at small part of fiber of length $dz$, starting from $z$. For Jones matrix one can then write:
+	$$
+	\mcm(z+dz) = \mathcal{R}^{-1}[\theta(z)]\begin{pmatrix}
+		e^{i\cdot d\phi_x(z)} & 0 \\
+		0 & e^{i\cdot d\phi_y(z)}
+	\end{pmatrix}\mathcal{R}[\theta(z)]\mcm(z)
+	$$ 
+	where $d\phi_{x,y}(z) = \frac{\omega n_{x,y}(z)}{c}dz$ and $\mathcal{R}[\theta] = \begin{pmatrix}
+		\cos\theta & \sin\theta\\ -\sin\theta & \cos\theta
+	\end{pmatrix}$~--- rotation matrix.
+
+	Lets subtract $\mcm(z)$ from both parts of equation. After some simplification we will get:
+	$$
+	d\mcm(z) = \begin{pmatrix}
+		-1 + e^{i\cdot d\phi_x(z)} \cos^2\theta(z) + e^{i\cdot d\phi_y(z)} \sin^2\theta(z) & (e^{i\cdot d\phi_x(z)} - e^{i\cdot d\phi_y(z)}) \sin\theta(z)\cos\theta(z) \\
+		(e^{i\cdot d\phi_x(z)} - e^{i\cdot d\phi_y(z)}) \sin\theta(z)\cos\theta(z) & -1 + e^{i\cdot d\phi_x(z)} \sin^2\theta(z) + e^{i\cdot d\phi_y(z)} \cos^2\theta(z) 
+	\end{pmatrix}\mcm(z)
+	$$
+	here we introduced $d\mcm(z) = \mcm(z+dz) - \mcm(z)$.
+	
+	Leaving only first order of $d\phi_{x,y}$ and dividing on $dz$, we obtain differential equation on Jones matrix of SM fiber:
+	\begin{multline*}
+		\dfrac{d\mcm(z)}{dz} = i\left\{\dfrac{d\phi_x}{dz}\begin{pmatrix}
+		\cos^2\theta(z) & \sin\theta(z)\cos\theta(z) \\
+		\sin\theta(z)\cos\theta(z) & \sin^2\theta(z)
+	\end{pmatrix} + \right. \\ \left.
+ 		\dfrac{d\phi_y(z)}{dz}\begin{pmatrix}
+	\sin^2\theta(z) & -\sin\theta(z)\cos\theta(z) \\
+	-\sin\theta(z)\cos\theta(z) & \cos^2\theta(z)
+	\end{pmatrix}
+	\right\}\mcm(z)
+	\end{multline*}
+	with obvious initial condition: $\mcm(0)=\mathds{1}$. Substituting $d\phi$ explicitly we finally obtain:
+	\begin{multline}
+		\label{main}
+		\dfrac{d\mcm(z)}{dz} = i\dfrac{\omega}{c}\left\{n_x(z)\begin{pmatrix}
+			\cos^2\theta(z) & \sin\theta(z)\cos\theta(z) \\
+			\sin\theta(z)\cos\theta(z) & \sin^2\theta(z)
+		\end{pmatrix} + \right. \\ \left.
+		n_y(z)\begin{pmatrix}
+			\sin^2\theta(z) & -\sin\theta(z)\cos\theta(z) \\
+			-\sin\theta(z)\cos\theta(z) & \cos^2\theta(z)
+		\end{pmatrix}
+		\right\}\mcm(z)
+	\end{multline}
+
+	Note, that we can freely add terms, proportional to $i\mcm(z)$ to the right side of eq.~\eqref{main} if there is no need to keep track of phase. The reason for it is:
+	\begin{equation*}
+		\dfrac{d\left(e^{i\alpha(z)}\mcm(z)\right)}{dz} = e^{i\alpha(z)}\left(\dfrac{d\mcm(z)}{dz} + i\dfrac{\alpha(z)}{dz}\mcm(z)\right)
+	\end{equation*}
+	so, solving~\eqref{main} with an arbitrary additional term $if(z)\mcm(z)$ will result in phase-shifted solution:
+	\begin{equation*}
+		\mcm'(z) = e^{i\alpha(z)}\mcm(z), \qquad \alpha(z) = \int\limits_0^zf(t)dt
+	\end{equation*}
+
+	However, if we consider addition of term $-i \dfrac{\omega}{c} n_x(z) \mcm(z)$ we will obtain much simpler equation:
+	\begin{equation}
+		\label{main2}
+		\dfrac{d\mcm'(z)}{dz} = i\dfrac{\omega}{c}\Delta n(z)\begin{pmatrix}
+			\sin^2\theta(z) & -\sin\theta(z)\cos\theta(z) \\
+			-\sin\theta(z)\cos\theta(z) & \cos^2\theta(z)
+		\end{pmatrix}\mcm'(z)
+	\end{equation}
+	where $\Delta n(z) = n_y(z) - n_x(z)$. And the true Jones matrix will be:
+	\begin{equation}
+		\label{true}
+		\mcm(z) = e^{i\int\limits_0^z \frac{\omega}{c} n_x(t) dt}\mcm'(z)
+	\end{equation}
+
+\section{Jones matrix of SM fiber properties}
+From now lets pay no attention on light losses. It is reasonable in small optical systems. In this case one can easily show unitarity of $\mcm$, which should simply be the result of losses absence. Obviously, $\mcm(0)^\dagger\mcm(0) = \mathds{1}$, and:
+\begin{equation*}
+	\dfrac{d\left(\mcm^\dagger(z)\mcm(z)\right)}{dz} = \dfrac{d\mcm^\dagger(z)}{dz}\mcm(z) + \mcm^\dagger(z)\dfrac{d\mcm(z)}{dz} = \mcm^\dagger(z) A^\dagger(z) \mcm(z) + \mcm^\dagger(z)A(z)\mcm(z) = 0
+\end{equation*}
+since from~\eqref{main} we see $A^\dagger(z)=-A(z)$ if refractive indices $n_{x,y}(z)$ is real. 
+
+Furthermore, $\mcm(z)$ belongs to $SU(2)$ group, since it starts in $\mcm(0)=\mathds{1}$ and smoothly evolve with change of $z$. It is well known that such matricies can be described with only 2 complex arguments $\zeta, \xi$, such that $|\zeta|^2+|\xi|^2=1$, so in our case:
+\begin{equation*}
+	\mcm(z) = \begin{pmatrix}
+		\zeta(z) & -\bar{\xi}(z) \\
+		\xi(z) &  \bar{\zeta}(z)
+	\end{pmatrix}, \qquad |\zeta(z)|^2+|\xi(z)|^2=1
+\end{equation*}
+
+One key feature about such representation is that matrix differential equation~\eqref{main} is now reduced to single vector equation:
+\begin{equation}
+	\label{mainvec}
+	\dfrac{d}{dz} \begin{pmatrix}
+		\zeta(z) \\
+		\xi(z)
+	\end{pmatrix} = A(z) \begin{pmatrix}
+	\zeta(z) \\
+	\xi(z)
+\end{pmatrix}
+\end{equation}
+where $A(z)$ is the following:
+\begin{multline*}
+	A(z) = i\dfrac{\omega}{c}\left\{n_x(z)\begin{pmatrix}
+		\cos^2\theta(z) & \sin\theta(z)\cos\theta(z) \\
+		\sin\theta(z)\cos\theta(z) & \sin^2\theta(z)
+	\end{pmatrix} + \right. \\ \left.
+	n_y(z)\begin{pmatrix}
+		\sin^2\theta(z) & -\sin\theta(z)\cos\theta(z) \\
+		-\sin\theta(z)\cos\theta(z) & \cos^2\theta(z)
+	\end{pmatrix}
+	\right\}
+\end{multline*}
+
+
+\section{Statistical properties of $\mcm$}
+Consider a set of arbitrary SM optical fibers of length $L$ with $n_{x,y}(z)$ distributed independently in each point $z$ and having mean values $\mathbb{E}n_x = \bar{n}_x$, $\mathbb{E}n_y = \bar{n}_y$. Let $\theta(z)$ be distributed uniformly and also independently in each point. As we will see, in such case mean Jones matrix of such set of fibers can be derived analytically.
+
+First of all, we will need to perform a step-back, and rewrite $\mcm(z+dz)$ in terms of matrix product:
+\begin{multline*}
+	\mcm(z+ dz) = \left\{\mathds{1} + i\dfrac{\omega}{c}\left[n_x(z)
+	\begin{pmatrix}
+		\cos^2\theta(z) & \sin\theta(z)\cos\theta(z) \\
+		\sin\theta(z)\cos\theta(z) & \sin^2\theta(z)
+	\end{pmatrix} + \right.\right.\\ \left.\left.
+	n_y(z) 
+	\begin{pmatrix}
+		\sin^2\theta(z) & -\sin\theta(z)\cos\theta(z) \\
+		-\sin\theta(z)\cos\theta(z) & \cos^2\theta(z)
+	\end{pmatrix}
+	\right]dz\right\}\mcm(z) = B(z,dz)\mcm(z)
+\end{multline*}
+
+The solution for $\mcm(L)$ thus will be:
+\begin{equation*}
+	\mcm(L) = \lim\limits_{N\rightarrow\infty}\prod\limits_{j=0}^{N-1} B\left(\dfrac{L}{N}j, \dfrac{L}{N}\right)
+\end{equation*}
+and for average fiber Jones matrix we may write\footnote{With respect to Lebesgue theorem of dominated convergence, because all $\mcm$ matrices are of $SU(2)$ group, so it is always true, that $|\mcm_{\alpha\beta}| \leq 1$, $|B(\dots)_{\alpha\beta}| \leq 1$}:
+\begin{equation*}
+	\mathbb{E}\mcm(L) = \lim\limits_{N\rightarrow\infty}\mathbb{E}\prod\limits_{j=0}^{N-1} B\left(\dfrac{L}{N}j, \dfrac{L}{N}\right)
+\end{equation*}
+
+Notice, that for independent random matrices $M^1, M^2$ it will be fulfilled:
+\begin{equation*}
+	\mathbb{E}\left(M^1 M^2\right) = \begin{Vmatrix}
+		\mathbb{E}\left(\sum_\gamma M^1_{\alpha\gamma}M^2_{\gamma\beta}\right) 
+	\end{Vmatrix} = \begin{Vmatrix}
+	\sum_\gamma \mathbb{E}M^1_{\alpha\gamma} \mathbb{E}M^2_{\gamma\beta}
+\end{Vmatrix} = \mathbb{E}M^1\cdot \mathbb{E}M^2
+\end{equation*}
+
+
+Since all parameters of $B$ matrices in different points $z = \dfrac{L}{N}j$ are independent, then we may write:
+\begin{equation*}
+	\mathbb{E}\mcm(L) = \lim\limits_{N\rightarrow\infty}\prod\limits_{j=0}^{N-1} \mathbb{E}\left[B\left(\dfrac{L}{N}j, \dfrac{L}{N}\right)\right] = \lim\limits_{N\rightarrow\infty} \left(\mathbb{E}[B]\left(\dfrac{L}{N}\right)\right)^N
+\end{equation*}
+
+Average $B\left(\dfrac{L}{N}j, \dfrac{L}{N}\right)$ can be calculated with respect to all assumptions above. We have:
+\begin{equation*}
+	\mathbb{E}[B]\left(\dfrac{L}{N}\right) = \begin{pmatrix}
+		1 + i\dfrac{\omega}{2c}\left(\bar{n}_x + \bar{n}_y\right)\dfrac{L}{N} & 0 \\
+		0 & 1 + i\dfrac{\omega}{2c}\left(\bar{n}_x + \bar{n}_y\right)\dfrac{L}{N}
+	\end{pmatrix}
+\end{equation*}
+from which its simple to find:
+\begin{equation}
+	\mathbb{E}\mcm(L) = \mathds{1}\lim\limits_{N\rightarrow\infty}\left(1 + i\dfrac{\omega}{2c}\left(\bar{n}_x + \bar{n}_y\right)\dfrac{L}{N} \right) =  e^{i\frac{\omega L}{c}\frac{\bar{n}_x + \bar{n}_y}{2}}\mathds{1}
+\end{equation}
+
+\label{problem}
+This result means, that there is no point in modeling average SM fiber with independently distributed $\theta$, $n_x$ and $n_y$, because the result will be obvious. 
+
+One may argue, that finite length of fiber pieces will change this result somehow, but all the changes occurs in $B(z,dz)$ matrix, and after averaging with respect to uniformly and independently distributed $\theta(z)$ estimated matrix still will be roughly the same:
+\begin{multline*}
+	\mathbb{E}\mcm(L, N) = \dfrac{1}{2^N} \left( \overline{e^{i\frac{\omega}{c}n_x\frac{L}{N}}} + \overline{e^{i\frac{\omega}{c}n_y\frac{L}{N}}}\right)^N \mathds{1} = \dfrac{1}{2^N} \left( \Phi_{n_x}\left(\frac{\omega}{c}\frac{L}{N}\right) + \Phi_{n_y}\left(\frac{\omega}{c}\frac{L}{N}\right)\right)^N \mathds{1}= \\
+	= \left( 1 + i\dfrac{\omega}{c}\dfrac{\bar{n}_x+\bar{n}_y}{2}\dfrac{L}{N} + o\left(\dfrac{L}{N}\right)\right)^N  \mathds{1} \approx e^{i\frac{\omega L}{c}\frac{\bar{n}_x + \bar{n}_y}{2}}\mathds{1}
+\end{multline*}
+here $\Phi_{n_{x,y}}(t)$ - characteristic functions of $n_{x,y}$ distributions.
+
+It will be useful to compute such second-order correlators: $\mathbb{E}\mcm_{\alpha\beta}\mcm_{\sigma\rho}$. For this purpose it will help next convolutions formula. Given tensor
+$$
+B_{\alpha\beta\sigma\rho} = \begin{pmatrix}
+	\begin{pmatrix}
+		a & 0 \\
+		0 & b
+	\end{pmatrix} & 
+	\begin{pmatrix}
+		0 & c \\
+		c & 0
+	\end{pmatrix} \\
+	\begin{pmatrix}
+		0 & c \\
+		c & 0
+	\end{pmatrix} &
+	\begin{pmatrix}
+		b & 0 \\
+		0 & a
+	\end{pmatrix}
+\end{pmatrix}
+$$
+we may analytically show:
+
+\newcommand\scalemath[2]{\scalebox{#1}{\mbox{\ensuremath{\displaystyle #2}}}}
+\begin{multline*}
+	\mathcal{P}(B,N)_{\alpha\beta\sigma\rho} = \sum\limits_{\alpha_j,\beta_j}\delta_{\alpha\alpha_1}\delta_{\beta\alpha_{N+1}}\delta_{\sigma\beta_1}\delta_{\rho\beta_{N+1}}\prod\limits_{j=1}^{N} B_{\alpha_j\alpha_{j+1}\beta_j\beta_{j+1}} = \\ =
+\scalemath{0.7}{\begin{pmatrix}
+	\begin{pmatrix}
+		\sum\limits_{k=0}^{\lfloor \frac{N}{2} \rfloor} \binom{N}{2k}a^{N-2k}c^{2k} & 0 \\
+		0 & \sum\limits_{k=0}^{\lfloor \frac{N}{2} \rfloor} \binom{N}{2k}b^{N-2k}c^{2k}
+	\end{pmatrix} & 
+	\begin{pmatrix}
+		0 & \sum\limits_{k=0}^{\lfloor \frac{N-1}{2} \rfloor} \binom{N}{2k+1}a^{N-2k-1}c^{2k+1} \\
+		\sum\limits_{k=0}^{\lfloor \frac{N-1}{2} \rfloor} \binom{N}{2k+1}b^{N-2k-1}c^{2k+1} & 0
+	\end{pmatrix} \\
+	\begin{pmatrix}
+		0 & \sum\limits_{k=0}^{\lfloor \frac{N-1}{2} \rfloor} \binom{N}{2k+1}b^{N-2k-1}c^{2k+1} \\
+		\sum\limits_{k=0}^{\lfloor \frac{N-1}{2} \rfloor} \binom{N}{2k+1}a^{N-2k-1}c^{2k+1} & 0
+	\end{pmatrix} &
+	\begin{pmatrix}
+		\sum\limits_{k=0}^{\lfloor \frac{N}{2} \rfloor} \binom{N}{2k}b^{N-2k}c^{2k} & 0 \\
+		0 & \sum\limits_{k=0}^{\lfloor \frac{N}{2} \rfloor} \binom{N}{2k}a^{N-2k}c^{2k}
+	\end{pmatrix}
+\end{pmatrix}	}
+\end{multline*}
+// TODO: show it) //
+
+
+\section{Numerical solution}
+In order to obtain SM optical fiber Jones matrix one need to solve~\eqref{main2},~\eqref{true} for given distribution of $\theta(z)$ and $n_{x,y}(z)$ along $z$-axis. However, in case of no losses it can be simplified to~\eqref{mainvec}. For this purpose we propose to use well-known ODE solving methods from Runge-Kutta family. One main advantage of this methods is that we can preserve matrix or vector notation. In other words there is no need to rewrite~\eqref{main2},\eqref{mainvec} as a system of equations on each element of $\mcm$, which keeps visibility. In vector case one may also explicitly include preservation of determinant in solver.
+
+Some words need to be said about modeling of a set of fibers. As we saw in~\ref{problem} the usage of uniform and independent distribution of $\theta(z)$ leads to useless bunch of calculations. So it will be better to find some other distributions, which fulfills more physical properties, such as continuity or even smoothness.
+	
+\end{document}
