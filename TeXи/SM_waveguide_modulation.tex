@@ -30,6 +30,7 @@
 \date{\today}
 \begin{document}
 	
+	\newcommand\scalemath[2]{\scalebox{#1}{\mbox{\ensuremath{\displaystyle #2}}}}
 	\newcommand{\mcm}{\mathcal{M}}
 	
 	\maketitle
@@ -53,7 +54,7 @@
 		E_{x}^0 \\
 		E_{y}^0
 	\end{pmatrix}
-	$ light passes through different optical elements and medium, which can be described as multiplying Jones vector on Jones matricies of those elements:
+	$ light passes through different optical elements and medium, which can be described as multiplying Jones vector on Jones matrices of those elements:
 	$$
 		\begin{pmatrix}
 		E_{x}^\text{end} \\
@@ -194,9 +195,10 @@ First of all, we will need to perform a step-back, and rewrite $\mcm(z+dz)$ in t
 \end{multline*}
 
 The solution for $\mcm(L)$ thus will be:
-\begin{equation*}
+\begin{equation}
+	\label{M}
 	\mcm(L) = \lim\limits_{N\rightarrow\infty}\prod\limits_{j=0}^{N-1} B\left(\dfrac{L}{N}j, \dfrac{L}{N}\right)
-\end{equation*}
+\end{equation}
 and for average fiber Jones matrix we may write\footnote{With respect to Lebesgue theorem of dominated convergence, because all $\mcm$ matrices are of $SU(2)$ group, so it is always true, that $|\mcm_{\alpha\beta}| \leq 1$, $|B(\dots)_{\alpha\beta}| \leq 1$}:
 \begin{equation*}
 	\mathbb{E}\mcm(L) = \lim\limits_{N\rightarrow\infty}\mathbb{E}\prod\limits_{j=0}^{N-1} B\left(\dfrac{L}{N}j, \dfrac{L}{N}\right)
@@ -239,7 +241,64 @@ One may argue, that finite length of fiber pieces will change this result someho
 \end{multline*}
 here $\Phi_{n_{x,y}}(t)$ - characteristic functions of $n_{x,y}$ distributions.
 
-It will be useful to compute such second-order correlators: $\mathbb{E}\mcm_{\alpha\beta}\mcm_{\sigma\rho}$. For this purpose it will help next convolutions formula. Given tensor
+However mean Jones matrix is mostly out of interest. We really need estimation of so called $R$-parameter, which is by definition:
+\begin{equation}
+	\label{R}
+	R = \max (R_x, R_y),\qquad
+R_{x,y} = \dfrac{\int\limits_0^T\left|E_{x,y}(\tau)\right|^2d\tau}{\int\limits_0^T\left|E_x(\tau)\right|^2 + \left|E_y(\tau)\right|^2d\tau}
+\end{equation}
+
+We, in turn, have defined Jones matrix in frequency domain, so it will be convenient to rewrite~\eqref{R} with respect to Parseval's identity as:
+\begin{equation*}
+R_{x,y} = \frac{\sum\limits_{n=-\infty}^{+\infty} \left|E_{x,y}(\omega_n)\right|^2}{\sum\limits_{n=-\infty}^{+\infty} \left|E_x(\omega_n)\right|^2 + \left|E_y(\omega_n)\right|^2}
+\end{equation*}
+
+With respect to unitarity of $\mcm$:
+\begin{equation*}
+	R_{x,y} = \frac{\sum\limits_{n=-\infty}^{+\infty}\sum\limits_{\alpha,\beta} \mcm_{(x,y),\alpha}E^0_\alpha(\omega_n) E^{0*}_\beta(\omega_n) \mcm^\dagger_{\beta,(x,y)}}{\sum\limits_{n=-\infty}^{+\infty} \left|E_x^0(\omega_n)\right|^2 + \left|E_y^0(\omega_n)\right|^2}
+\end{equation*}
+
+In order to derive formula for $\mathbb{E}R_{x,y}$ we will need second-order correlators for $\mcm$: $\mathbb{E}\mcm^\dagger_{\alpha\beta}\mcm_{\sigma\rho}$. Remember, that $\mcm$ is~\eqref{M}, and $B(z,\Delta z)$ in case of no simplifications is:
+\begin{equation*}
+B(z, \Delta z) =  \begin{pmatrix}
+	e^{i\frac{\omega}{c}n_x(z)\Delta z} \cos^2\theta(z) + e^{i\frac{\omega}{c}n_y(z) \Delta z} \sin^2\theta(z) & (e^{i\frac{\omega}{c}n_x(z)\Delta z} - e^{i\frac{\omega}{c}n_y(z) \Delta z}) \sin\theta(z)\cos\theta(z) \\
+	(e^{i\frac{\omega}{c}n_x(z)\Delta z} - e^{i\frac{\omega}{c}n_y(z) \Delta z}) \sin\theta(z)\cos\theta(z) & e^{i\frac{\omega}{c}n_x(z)\Delta z} \sin^2\theta(z) + e^{i\frac{\omega}{c}n_y(z) \Delta z} \cos^2\theta(z) 
+\end{pmatrix}
+\end{equation*}
+
+After averaging with assumption of $\theta(z), n_{x,y}(z)$ independence we will obtain for correlators:
+\begin{multline*}
+\mathbb{E}\mcm^\dagger_{\alpha\beta}\mcm_{\sigma\rho} = \mathbb{E}
+\sum\limits_{\alpha_j,\beta_j}\delta_{\alpha\alpha_1}\delta_{\beta\alpha_{N+1}}\delta_{\sigma\beta_1}\delta_{\rho\beta_{N+1}}\prod\limits_{j=1}^{N} B^\dagger_{\alpha_j\alpha_{j+1}}\left( \dfrac{L}{N}(j-1), \dfrac{L}{N} \right)B_{\beta_{j+1}\beta_j}\left( \dfrac{L}{N}(j-1), \dfrac{L}{N} \right) = \\ =
+\sum\limits_{\alpha_j,\beta_j}\delta_{\alpha\alpha_1}\delta_{\beta\alpha_{N+1}}\delta_{\sigma\beta_1}\delta_{\rho\beta_{N+1}}\prod\limits_{j=1}^{N}\mathbb{E} \left[B^\dagger_{\alpha_j\alpha_{j+1}}\left( \dfrac{L}{N}(j-1), \dfrac{L}{N} \right)B^T_{\beta_j\beta_{j+1}}\left( \dfrac{L}{N}(j-1), \dfrac{L}{N} \right)\right]
+\end{multline*}
+
+For estimations in right side we can explicitly write:
+\begin{multline}
+	\label{BEst}
+\mathbb{E} \left[B^\dagger_{\alpha_j\alpha_{j+1}}\left( \dfrac{L}{N}(j-1), \dfrac{L}{N} \right)B^T_{\beta_j\beta_{j+1}}\left( \dfrac{L}{N}(j-1), \dfrac{L}{N} \right)\right] = \\ = \dfrac{1}{8} 
+\scalemath{0.7}{ \begin{pmatrix}
+	\begin{pmatrix}
+		6 + \Phi_{\Delta n}\left( \frac{\omega}{c}\frac{L}{N} \right) + \Phi_{\Delta n}\left( -\frac{\omega}{c}\frac{L}{N} \right) & 0 \\
+		0 & 2 + 3\Phi_{\Delta n}\left( \frac{\omega}{c}\frac{L}{N} \right) + 3\Phi_{\Delta n}\left( -\frac{\omega}{c}\frac{L}{N} \right)
+	\end{pmatrix} & 
+	\begin{pmatrix}
+		0 & 2 - \Phi_{\Delta n}\left( \frac{\omega}{c}\frac{L}{N} \right) - \Phi_{\Delta n}\left( -\frac{\omega}{c}\frac{L}{N} \right) \\
+		2 - \Phi_{\Delta n}\left( \frac{\omega}{c}\frac{L}{N} \right) - \Phi_{\Delta n}\left( -\frac{\omega}{c}\frac{L}{N} \right) & 0
+	\end{pmatrix} \\
+	\begin{pmatrix}
+		0 & 2 - \Phi_{\Delta n}\left( \frac{\omega}{c}\frac{L}{N} \right) - \Phi_{\Delta n}\left( -\frac{\omega}{c}\frac{L}{N} \right) \\
+		2 - \Phi_{\Delta n}\left( \frac{\omega}{c}\frac{L}{N} \right) - \Phi_{\Delta n}\left( -\frac{\omega}{c}\frac{L}{N} \right) & 0
+	\end{pmatrix} & 	
+	\begin{pmatrix}
+		2 + 3\Phi_{\Delta n}\left( \frac{\omega}{c}\frac{L}{N} \right) + 3\Phi_{\Delta n}\left( -\frac{\omega}{c}\frac{L}{N} \right) & 0 \\
+		0 & 6 + \Phi_{\Delta n}\left( \frac{\omega}{c}\frac{L}{N} \right) + \Phi_{\Delta n}\left( -\frac{\omega}{c}\frac{L}{N} \right)
+	\end{pmatrix}
+\end{pmatrix} }
+\end{multline}
+where $\Phi_{\Delta n}(t) = \mathbb{E}e^{it(n_x - n_y)} = \Phi_{n_x}(t)\cdot\Phi_{n_y}(-t)$ is characteristic function of $\Delta n = n_x - n_y$
+
+Now we need somehow compute tensor contraction of similar tensors. For this purpose we need next formula. Given tensor
 $$
 B_{\alpha\beta\sigma\rho} = \begin{pmatrix}
 	\begin{pmatrix}
@@ -262,7 +321,7 @@ B_{\alpha\beta\sigma\rho} = \begin{pmatrix}
 $$
 we may analytically show:
 
-\newcommand\scalemath[2]{\scalebox{#1}{\mbox{\ensuremath{\displaystyle #2}}}}
+
 \begin{multline*}
 	\mathcal{P}(B,N)_{\alpha\beta\sigma\rho} = \sum\limits_{\alpha_j,\beta_j}\delta_{\alpha\alpha_1}\delta_{\beta\alpha_{N+1}}\delta_{\sigma\beta_1}\delta_{\rho\beta_{N+1}}\prod\limits_{j=1}^{N} B_{\alpha_j\alpha_{j+1}\beta_j\beta_{j+1}} = \\ =
 \scalemath{0.7}{\begin{pmatrix}
@@ -282,10 +341,99 @@ we may analytically show:
 		\sum\limits_{k=0}^{\lfloor \frac{N}{2} \rfloor} \binom{N}{2k}b^{N-2k}c^{2k} & 0 \\
 		0 & \sum\limits_{k=0}^{\lfloor \frac{N}{2} \rfloor} \binom{N}{2k}a^{N-2k}c^{2k}
 	\end{pmatrix}
-\end{pmatrix}	}
+\end{pmatrix}	} = \\ =
+\dfrac{1}{2} \begin{pmatrix}
+	\begin{pmatrix}
+		(a+c)^N+(a-c)^N & 0 \\
+		0 & (b+c)^N+(b-c)^N
+	\end{pmatrix} & 
+	\begin{pmatrix}
+		0 & (a+c)^N-(a-c)^N \\
+		(b+c)^N-(b-c)^N & 0
+	\end{pmatrix} \\
+	\begin{pmatrix}
+		0 & (b+c)^N-(b-c)^N \\
+		(a+c)^N-(a-c)^N & 0
+	\end{pmatrix} &
+	\begin{pmatrix}
+		(b+c)^N+(b-c)^N & 0 \\
+		0 & (a+c)^N+(a-c)^N
+	\end{pmatrix}
+\end{pmatrix}
 \end{multline*}
 // TODO: show it) //
 
+Substituting $a,b,c$ from~\eqref{BEst} we finally obtain:
+\begin{equation*}
+\mathbb{E}\mcm^\dagger_{\alpha\beta}\mcm_{\sigma\rho} = 
+%\scalemath{0.4}{ \begin{pmatrix}
+%	\begin{pmatrix}
+%		1 +\left(\frac{1}{2}+\frac{\Phi_{\Delta n}\left( \frac{\omega}{c}\frac{L}{N} \right) + \Phi_{\Delta n}\left(- \frac{\omega}{c}\frac{L}{N} \right)}{4}\right)^N & 0 \\
+%		0 & \left(\frac{1}{2}+\frac{\Phi_{\Delta n}\left( \frac{\omega}{c}\frac{L}{N} \right) + \Phi_{\Delta n}\left(- \frac{\omega}{c}\frac{L}{N} \right)}{4}\right)^N + \left(\frac{\Phi_{\Delta n}\left( \frac{\omega}{c}\frac{L}{N} \right) + \Phi_{\Delta n}\left(- \frac{\omega}{c}\frac{L}{N} \right)}{2}\right)^N
+%	\end{pmatrix} & 
+%	\begin{pmatrix}
+%		0 & 1-\left(\frac{1}{2}+\frac{\Phi_{\Delta n}\left( \frac{\omega}{c}\frac{L}{N} \right) + \Phi_{\Delta n}\left(- \frac{\omega}{c}\frac{L}{N} \right)}{4}\right)^N \\
+%		\left(\frac{1}{2}+\frac{\Phi_{\Delta n}\left( \frac{\omega}{c}\frac{L}{N} \right) + \Phi_{\Delta n}\left(- \frac{\omega}{c}\frac{L}{N} \right)}{4}\right)^N- \left(\frac{\Phi_{\Delta n}\left( \frac{\omega}{c}\frac{L}{N} \right) + \Phi_{\Delta n}\left(- \frac{\omega}{c}\frac{L}{N} \right)}{2}\right)^N & 0
+%	\end{pmatrix} \\
+%	\begin{pmatrix}
+%		0 & \left(\frac{1}{2}+\frac{\Phi_{\Delta n}\left( \frac{\omega}{c}\frac{L}{N} \right) + \Phi_{\Delta n}\left(- \frac{\omega}{c}\frac{L}{N} \right)}{4}\right)^N- \left(\frac{\Phi_{\Delta n}\left( \frac{\omega}{c}\frac{L}{N} \right) + \Phi_{\Delta n}\left(- \frac{\omega}{c}\frac{L}{N} \right)}{2}\right)^N \\
+%		1 -\left(\frac{1}{2}+\frac{\Phi_{\Delta n}\left( \frac{\omega}{c}\frac{L}{N} \right) + \Phi_{\Delta n}\left(- \frac{\omega}{c}\frac{L}{N} \right)}{4}\right)^N & 0
+%	\end{pmatrix} &
+%	\begin{pmatrix}
+%		\left(\frac{1}{2}+\frac{\Phi_{\Delta n}\left( \frac{\omega}{c}\frac{L}{N} \right) + \Phi_{\Delta n}\left(- \frac{\omega}{c}\frac{L}{N} \right)}{4}\right)^N+ \left(\frac{\Phi_{\Delta n}\left( \frac{\omega}{c}\frac{L}{N} \right) + \Phi_{\Delta n}\left(- \frac{\omega}{c}\frac{L}{N} \right)}{2}\right)^N & 0 \\
+%		0 & 1 +\left(\frac{1}{2}+\frac{\Phi_{\Delta n}\left( \frac{\omega}{c}\frac{L}{N} \right) + \Phi_{\Delta n}\left(- \frac{\omega}{c}\frac{L}{N} \right)}{4}\right)^N
+%	\end{pmatrix}
+%\end{pmatrix}
+%} = \\ =
+\begin{pmatrix}
+	\begin{pmatrix}
+		\mathfrak{A} & 0 \\
+		0 & \mathfrak{B}
+	\end{pmatrix} & 
+	\begin{pmatrix}
+		0 & \mathfrak{C} \\
+	\mathfrak{D} & 0
+	\end{pmatrix} \\
+	\begin{pmatrix}
+		0 & \mathfrak{D} \\
+		\mathfrak{C} & 0
+	\end{pmatrix} &
+	\begin{pmatrix}
+		\mathfrak{B} & 0 \\
+		0 & \mathfrak{A}
+	\end{pmatrix}
+\end{pmatrix}
+\end{equation*}
+where
+\begin{align*}
+	\mathfrak{A} &= \frac{1}{2} +\frac{1}{2}\left(\frac{1}{2}+\frac{\Phi_{\Delta n}\left( \frac{\omega}{c}\frac{L}{N} \right) + \Phi_{\Delta n}\left(- \frac{\omega}{c}\frac{L}{N} \right)}{4}\right)^N \\
+	\mathfrak{B} &= \frac{1}{2}\left(\frac{1}{2}+\frac{\Phi_{\Delta n}\left( \frac{\omega}{c}\frac{L}{N} \right) + \Phi_{\Delta n}\left(- \frac{\omega}{c}\frac{L}{N} \right)}{4}\right)^N+ \frac{1}{2}\left(\frac{\Phi_{\Delta n}\left( \frac{\omega}{c}\frac{L}{N} \right) + \Phi_{\Delta n}\left(- \frac{\omega}{c}\frac{L}{N} \right)}{2}\right)^N \\
+	\mathfrak{C} &= \frac{1}{2} -\frac{1}{2}\left(\frac{1}{2}+\frac{\Phi_{\Delta n}\left( \frac{\omega}{c}\frac{L}{N} \right) + \Phi_{\Delta n}\left(- \frac{\omega}{c}\frac{L}{N} \right)}{4}\right)^N \\
+	\mathfrak{D} &= \frac{1}{2}\left(\frac{1}{2}+\frac{\Phi_{\Delta n}\left( \frac{\omega}{c}\frac{L}{N} \right) + \Phi_{\Delta n}\left(- \frac{\omega}{c}\frac{L}{N} \right)}{4}\right)^N- \frac{1}{2}\left(\frac{\Phi_{\Delta n}\left( \frac{\omega}{c}\frac{L}{N} \right) + \Phi_{\Delta n}\left(- \frac{\omega}{c}\frac{L}{N} \right)}{2}\right)^N
+\end{align*}
+
+We will exploit the following property of characteristic function:
+\begin{equation*}
+\Phi_{\Delta n}\left(t\right) = 1 + it\mathbb{E}\left[\Delta n\right] - \frac{t^2}{2}\mathbb{E}\left[\Delta n^2\right] + \underline{o}\left(t^2\right)
+\end{equation*}
+
+so, assuming $\frac{L}{N} \ll 1$ we may rewrite:
+\begin{align*}
+	\mathfrak{A} &= \frac{1}{2} + \frac{1}{2}\exp\left\{ -\left(\frac{\omega L}{2c}\right)^2\frac{\mathbb{E}\left[\Delta n^2\right]}{N} + \underline{o}\left(\frac{1}{N}\right) \right\} = 1 -\frac{1}{2}\left(\frac{\omega L}{2c}\right)^2\frac{\mathbb{E}\left[\Delta n^2\right]}{N} + \underline{o}\left(\frac{1}{N}\right) \\
+	\mathfrak{B} &= \frac{1}{2}\exp\left\{ -\left(\frac{\omega L}{2c}\right)^2\frac{\mathbb{E}\left[\Delta n^2\right]}{N} + \underline{o}\left(\frac{1}{N}\right) \right\} + \frac{1}{2}\exp\left\{-\frac{1}{2} \left(\frac{\omega L}{c}\right)^2\frac{\mathbb{E}\left[\Delta n^2\right]}{N} + \underline{o}\left(\frac{1}{N}\right) \right\} \\
+	\mathfrak{C} &= \frac{1}{2} - \frac{1}{2} \exp\left\{ -\left(\frac{\omega L}{2c}\right)^2\frac{\mathbb{E}\left[\Delta n^2\right]}{N} + \underline{o}\left(\frac{1}{N}\right) \right\} = \frac{1}{2}\left(\frac{\omega L}{2c}\right)^2\frac{\mathbb{E}\left[\Delta n^2\right]}{N} + \underline{o}\left(\frac{1}{N}\right) \\
+	\mathfrak{D} &= \frac{1}{2}\exp\left\{ -\left(\frac{\omega L}{2c}\right)^2\frac{\mathbb{E}\left[\Delta n^2\right]}{N} + \underline{o}\left(\frac{1}{N}\right) \right\} - \frac{1}{2}\exp\left\{-\frac{1}{2} \left(\frac{\omega L}{c}\right)^2\frac{\mathbb{E}\left[\Delta n^2\right]}{N} + \underline{o}\left(\frac{1}{N}\right) \right\}
+\end{align*}
+and finally, for $R_x$:
+\begin{multline}
+	\label{REst}
+	R_{x,y} = \frac{\sum\limits_{n=-\infty}^{+\infty} \mathfrak{A}\left|E^0_{x,y}(\omega_n)\right|^2 + \mathfrak{C}\left|E^0_{y,x}(\omega_n)\right|^2}{\sum\limits_{n=-\infty}^{+\infty} \left|E_x^0(\omega_n)\right|^2 + \left|E_y^0(\omega_n)\right|^2} = \\ =
+	R^0_{x,y} - \frac{1}{2}\left(\frac{L}{c}\right)^2\frac{\mathbb{E}\left[\Delta n^2\right]}{N} \frac{\sum\limits_{n=-\infty}^{+\infty} \omega_n^2\left(\left|E^0_{x,y}(\omega_n)\right|^2 - \left|E^0_{y,x}(\omega_n)\right|^2\right)}{\sum\limits_{n=-\infty}^{+\infty} \left|E_x^0(\omega_n)\right|^2 + \left|E_y^0(\omega_n)\right|^2} + \underline{o}\left(\frac{1}{N}\right)
+\end{multline}
+
+Formula~\eqref{REst} shows, that in limit $\Delta L \rightarrow 0$\,($N\rightarrow \infty$) there will be no change in $R$-coefficient due to optical fiber.
+
+The conclusion we can make from these properties is that approximation of optical fiber with one having completely independently distributed parameters have no practical interest and in general is wrong approach. To caption effects of polarization corruption one need to model optical fiber with care of correlation effects between different points or strictly limit $\Delta L$ from below by correlation length. However in this case given characteristic functions of $n_{x,y}$ distributions one may explicitly write analytical expression for $R$.
 
 \section{Numerical solution}
 In order to obtain SM optical fiber Jones matrix one need to solve~\eqref{main2},~\eqref{true} for given distribution of $\theta(z)$ and $n_{x,y}(z)$ along $z$-axis. However, in case of no losses it can be simplified to~\eqref{mainvec}. For this purpose we propose to use well-known ODE solving methods from Runge-Kutta family. One main advantage of this methods is that we can preserve matrix or vector notation. In other words there is no need to rewrite~\eqref{main2},\eqref{mainvec} as a system of equations on each element of $\mcm$, which keeps visibility. In vector case one may also explicitly include preservation of determinant in solver.
