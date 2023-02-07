@@ -143,13 +143,15 @@ From now lets pay no attention on light losses. It is reasonable in small optica
 \end{equation*}
 since from~\eqref{main} we see $A^\dagger(z)=-A(z)$ if refractive indices $n_{x,y}(z)$ is real. 
 
-Furthermore, $\mcm(z)$ belongs to $SU(2)$ group, since it starts in $\mcm(0)=\mathds{1}$ and smoothly evolve with change of $z$. It is well known that such matricies can be described with only 2 complex arguments $\zeta, \xi$, such that $|\zeta|^2+|\xi|^2=1$, so in our case:
+So, $\mcm(z)$ belongs to $U(2)$ group. It is well known that such matrices can be described with only 2 complex and 1 real arguments $\zeta, \xi, \phi$, such that $|\zeta|^2+|\xi|^2=1$, so in our case:
 \begin{equation*}
 	\mcm(z) = \begin{pmatrix}
-		\zeta(z) & -\bar{\xi}(z) \\
-		\xi(z) &  \bar{\zeta}(z)
+		\zeta(z) & e^{-i\phi}\bar{\xi}(z) \\
+		\xi(z) &  e^{i\phi}\bar{\zeta}(z)
 	\end{pmatrix}, \qquad |\zeta(z)|^2+|\xi(z)|^2=1
 \end{equation*}
+
+// Rewrite it!!! //
 
 One key feature about such representation is that matrix differential equation~\eqref{main} is now reduced to single vector equation:
 \begin{equation}
@@ -174,6 +176,7 @@ where $A(z)$ is the following:
 	\end{pmatrix}
 	\right\}
 \end{multline*}
+// Wrong //
 
 
 \section{Statistical properties of $\mcm$}
@@ -431,7 +434,7 @@ and finally, for $R_x$:
 	R^0_{x,y} - \frac{1}{2}\left(\frac{L}{c}\right)^2\frac{\mathbb{E}\left[\Delta n^2\right]}{N} \frac{\sum\limits_{n=-\infty}^{+\infty} \omega_n^2\left(\left|E^0_{x,y}(\omega_n)\right|^2 - \left|E^0_{y,x}(\omega_n)\right|^2\right)}{\sum\limits_{n=-\infty}^{+\infty} \left|E_x^0(\omega_n)\right|^2 + \left|E_y^0(\omega_n)\right|^2} + \underline{o}\left(\frac{1}{N}\right)
 \end{multline}
 
-Formula~\eqref{REst} shows, that in limit $\Delta L \rightarrow 0$\,($N\rightarrow \infty$) there will be no change in $R$-coefficient due to optical fiber.
+Formula~\eqref{REst} shows, that in limit $\Delta L \rightarrow 0$\,($N\rightarrow \infty$) there will be no change in $R_{x,y}$ coefficient due to optical fiber.
 
 The conclusion we can make from these properties is that approximation of optical fiber with one having completely independently distributed parameters have no practical interest and in general is wrong approach. To caption effects of polarization corruption one need to model optical fiber with care of correlation effects between different points or strictly limit $\Delta L$ from below by correlation length. However in this case given characteristic functions of $n_{x,y}$ distributions one may explicitly write analytical expression for $R$.
 
