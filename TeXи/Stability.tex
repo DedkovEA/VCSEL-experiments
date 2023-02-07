@@ -1,0 +1,178 @@
+% \documentclass[12pt,a4paper]{article}
+\documentclass[12pt, notitlepage]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+
+\usepackage[left=1in, right=1in, top=1in, bottom=1in]{geometry}
+
+\usepackage{titling}
+%\usepackage{lipsum}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{float}
+%\usepackage[margin=2cm]{geometry}
+\usepackage{caption}
+\usepackage{dsfont}
+
+\pretitle{\begin{center}\Huge\bfseries}
+	\posttitle{\par\end{center}\vskip 0.5em}
+\preauthor{\begin{center}\Large\ttfamily}
+	\postauthor{\end{center}}
+\predate{\par\large\centering}
+\postdate{\par}
+
+\title{Stability of polarizations in VCSEL}
+\author{Evgeniy Dedkov}
+\date{\today}
+\begin{document}
+	
+	\newcommand\scalemath[2]{\scalebox{#1}{\mbox{\ensuremath{\displaystyle #2}}}}
+	
+	\maketitle
+	\thispagestyle{empty}
+	
+	\begin{abstract}
+		This material derives regions of stability of different polarizations in VCSEL.
+	\end{abstract}
+	
+	\section{Basic equations}
+	We will use the following notation for rate equations of VCSEL:
+	\begin{gather}
+		\dot{E_+} = \frac{1}{2\tau_{ph}}(1+i\alpha)\left[G_L - 1+ \frac{d}{N_{th} - N_{tr}}\right] E_+ - (\gamma_a + i\gamma_p) E_- \\
+		\dot{E_-} = \frac{1}{2\tau_{ph}}(1+i\alpha)\left[G_L - 1- \frac{d}{N_{th} - N_{tr}}\right] E_- - (\gamma_a + i\gamma_p) E_+ \\
+		\dot{N} = \frac{I}{e} - \frac{N}{\tau_e} - \frac{G_L}{\tau_{ph}}(|E_+|^2+|E_-|^2) - \frac{1}{\tau_{ph}}\frac{d}{N_{th} - N_{tr}}(|E_+|^2 - |E_-|^2)\\
+		\dot{d} = -\frac{1}{\tau_d} d -  \frac{G_L}{\tau_{ph}}(|E_+|^2-|E_-|^2) - \frac{1}{\tau_{ph}}\frac{d}{N_{th} - N_{tr}}(|E_+|^2+|E_-|^2)
+	\end{gather}
+	where $G_L = \frac{N - N_{tr}}{N_{th} - N_{tr}}$
+	For simplicity lets introduce:
+	\begin{gather}
+		F_\pm = \frac{1}{\sqrt{\tau_{ph}(N_th - N_tr)}}E_\pm \\
+		n = \frac{d}{N_{th} - N_{tr}}
+	\end{gather}
+	So resulting rate equations will be:
+	\begin{gather}
+		\dot{F_+} = \frac{1}{2\tau_{ph}}(1+i\alpha)\left[G_L - 1+ n\right] F_+ - (\gamma_a + i\gamma_p) F_- \\
+		\dot{F_-} = \frac{1}{2\tau_{ph}}(1+i\alpha)\left[G_L - 1- n\right] F_- - (\gamma_a + i\gamma_p) F_+ \\
+		\dot{G_L} = \frac{1}{N_{th}-N_{tr}} (\frac{I}{e} - \frac{N_{tr}}{\tau_e} ) - \frac{G_L}{\tau_e} - G_L(|F_+|^2+|F_-|^2) - n(|F_+|^2 - |F_-|^2) \\
+		\dot{n} = -\frac{1}{\tau_d} n - G_L(|F_+|^2-|F_-|^2) - n(|F_+|^2+|F_-|^2)
+	\end{gather}
+	And finally, for convenience:
+	\begin{gather}
+		\kappa = \frac{1}{2\tau_ph}\\
+		\Lambda = \frac{1}{N_{th} - N_{tr}}\left(\frac{I\tau_e}{e}-N_{tr}\right)\\
+		\gamma = \frac{1}{\tau_e}\\
+		\gamma_d = \frac{1}{\tau_d}
+	\end{gather} 
+	After-all: 
+		\begin{gather}
+			\label{main_rate1}
+		\dot{F_+} = \kappa(1+i\alpha)\left[G_L+ n - 1\right] F_+ - (\gamma_a + i\gamma_p) F_- \\
+		\dot{F_-} = \kappa(1+i\alpha)\left[G_L- n - 1\right] F_- - (\gamma_a + i\gamma_p) F_+ \\
+		\dot{G_L} = \gamma\Lambda - \gamma G_L - G_L(|F_+|^2+|F_-|^2) - n(|F_+|^2 - |F_-|^2) \\
+		\label{main_rate4}
+		\dot{n} = -\gamma_d n - G_L(|F_+|^2-|F_-|^2) - n(|F_+|^2+|F_-|^2)
+	\end{gather}
+
+	\section{Stationary solutions}
+	To obtain stationary solutions for elliptically polarized light we need to substitute
+	\begin{gather*}
+		F_\pm = F^0_\pm e^{i(\omega t \pm \psi)}\\
+		G_L = G_L^0\\
+		n = n^0
+	\end{gather*}
+	in \eqref{main_rate1}--\eqref{main_rate4}. We obtain:
+	\begin{gather}
+		\label{stat1}
+		i\omega = \kappa(1+i\alpha)\left[G^0_L+ n^0 - 1\right] - (\gamma_a + i\gamma_p) \frac{F^0_-}{F^0_+} e^{- 2i\psi} \\
+		\label{stat2}
+		i\omega = \kappa(1+i\alpha)\left[G^0_L- n^0 - 1\right] - (\gamma_a + i\gamma_p) \frac{F^0_+}{F^0_-} e^{2i\psi} \\
+		\label{stat3}
+		0 = \gamma\Lambda - \gamma G^0_L - G^0_L(|F^0_+|^2+|F^0_-|^2) - n^0(|F^0_+|^2 - |F^0_-|^2) \\
+		\label{stat4}
+		0 = -\gamma_d n^0 - G^0_L(|F^0_+|^2-|F^0_-|^2) - n^0(|F^0_+|^2+|F^0_-|^2)
+	\end{gather}
+First two equations may be rewritten as:
+\begin{gather}
+	\label{statir1}
+	0 = \kappa \left[G^0_L+ n^0 - 1\right] - \gamma_a \frac{F^0_-}{F^0_+} \cos 2\psi - \gamma_p \frac{F^0_-}{F^0_+} \sin 2\psi \\
+	\omega = \alpha\kappa \left[G^0_L+ n^0 - 1\right] + \gamma_a \frac{F^0_-}{F^0_+} \sin 2\psi - \gamma_p \frac{F^0_-}{F^0_+} \cos 2\psi \\
+	0 = \kappa \left[G^0_L- n^0 - 1\right] - \gamma_a \frac{F^0_+}{F^0_-} \cos 2\psi + \gamma_p \frac{F^0_+}{F^0_-} \sin 2\psi \\
+	\label{statir4}
+	\omega = \alpha\kappa \left[G^0_L- n^0 - 1\right] - \gamma_a \frac{F^0_+}{F^0_-} \sin 2\psi - \gamma_p \frac{F^0_+}{F^0_-} \cos 2\psi
+\end{gather}
+
+From~\eqref{stat3},~\eqref{stat4} we may find:
+\begin{equation}
+	\label{Fpm}
+	(F_\pm^0)^2 = \frac{\gamma \Lambda - \gamma G^0_L \mp \gamma_d n^0}{2(G^0_L\pm n^0)}
+\end{equation}
+and from~\eqref{statir1}--\eqref{statir4} follows (add and subtract 1-3, 2-4 respectively)\footnote{We will further omit zero indices for simplicity}:
+\begin{gather}
+	0 = 2\kappa n - \gamma_a \left( \xi^{-1} - \xi \right)\cos 2\psi - \gamma_p \left(\xi^{-1} + \xi\right)\sin 2\psi \\
+	0 = 2\kappa \alpha n  - \gamma_p \left(\xi^{-1} - \xi\right)\cos 2\psi + \gamma_a \left( \xi^{-1} + \xi \right)\sin 2\psi \\
+	0 = 2\kappa\left(G_L - 1 \right) - \gamma_a \left(\xi^{-1} + \xi\right)\cos 2\psi - \gamma_p \left( \xi^{-1} - \xi \right)\sin 2\psi \\
+	2\omega = 2\kappa \alpha \left(G_L - 1\right) - \gamma_p \left(\xi^{-1} + \xi\right)\cos 2\psi + \gamma_a \left( \xi^{-1} - \xi \right)\sin 2\psi
+\end{gather}
+where $\xi = \frac{F^0_+}{F^0_-}$. From first two equations we may find representations of $\xi$ combinations:
+\begin{gather}
+	\left(\xi^{-1} + \xi\right) = 2\kappa n \frac{\gamma_p - \alpha\gamma_a}{\gamma_a^2 + \gamma_p^2}\frac{1}{\sin2\psi} \\
+	\left(\xi^{-1} - \xi\right) = 2\kappa n \frac{\gamma_a + \alpha\gamma_p}{\gamma_a^2 + \gamma_p^2}\frac{1}{\cos 2\psi}	
+\end{gather}
+and from 3rd equation now we obtain:
+\begin{equation}
+	\label{tanraw}
+	0 = 2\kappa\left(G_L - 1 \right) -  2\kappa n\gamma_a \frac{\gamma_p - \alpha\gamma_a}{\gamma_a^2 + \gamma_p^2}\cot 2\psi -  2\kappa n\gamma_p \frac{\gamma_a + \alpha\gamma_p}{\gamma_a^2 + \gamma_p^2}\tan 2\psi
+\end{equation}
+which may be simplified:
+\begin{equation}
+n\gamma_p\left(\gamma_a + \alpha\gamma_p\right) \tan^2 2\psi - \left(G_L - 1\right)\left(\gamma_a^2 + \gamma_p^2\right)\tan 2\psi + n\gamma_a\left(\gamma_p-\alpha\gamma_a\right) = 0
+\end{equation}
+and solved:
+\begin{gather}
+	\tan 2\psi = \frac{(G_L-1)(\gamma_a^2 + \gamma_p^2) \pm \mathcal{A}}{2n\gamma_p(\gamma_a+\alpha\gamma_p)}\\
+	\mathcal{A} = \sqrt{(G_L-1)^2(\gamma_a^2+\gamma_p)^2 - 4n^2\gamma_a\gamma_p(\gamma_a+\alpha\gamma_p)(\gamma_p - \alpha\gamma_a)}
+\end{gather}
+For $\omega$, in turn, we have:
+\begin{equation}
+	\label{omegaraw}
+	2\omega = 2\kappa \alpha \left(G_L - 1\right) -  2\kappa n\gamma_p  \frac{\gamma_p - \alpha\gamma_a}{\gamma_a^2 + \gamma_p^2}\cot 2\psi +   2\kappa n \gamma_a\frac{\gamma_a + \alpha\gamma_p}{\gamma_a^2 + \gamma_p^2}\tan 2\psi
+\end{equation}
+Combining properly~\eqref{omegaraw} and \eqref{tanraw}:
+\begin{equation}
+	2\omega\gamma_a = 2\kappa \left(\alpha \gamma_a - \gamma_p\right)\left(G_L - 1\right) +   2\kappa n \left(\gamma_a + \alpha\gamma_p\right)\tan 2\psi
+\end{equation}
+and finally:
+\begin{equation}
+	\omega = \frac{\kappa}{\gamma_a} \left[-\left(\gamma_p - \alpha \gamma_a\right)\left(G_L - 1\right) +   n \left(\gamma_a + \alpha\gamma_p\right)\tan 2\psi\right]
+\end{equation}
+
+Now we can obtain $\omega$, $\psi$ and $F_\pm$ if we are provided with $n$ and $G_L$. In order to get them we will numerically solve~\eqref{stat3},\eqref{stat4} with respect to:
+\begin{equation}
+	\frac{\xi^{-1}-\xi}{\xi^{-1}+\xi} = \frac{F_-^2-F_+^2}{F_-^2 + F_+^2} = \frac{\gamma_a + \alpha\gamma_p}{\gamma_p - \alpha\gamma_a}\tan 2\psi = \frac{(G_L-1)(\gamma_a^2 + \gamma_p^2) \pm \mathcal{A}}{2n\gamma_p(\gamma_p - \alpha\gamma_a)} = \lambda
+\end{equation}
+from here:
+\begin{equation}
+	\xi^2 = \frac{1-\lambda}{1+\lambda}
+\end{equation}
+and equations~\eqref{stat3},\eqref{stat4} become:
+\begin{gather}
+	0 = \gamma\Lambda - \gamma G_L - G_L(\xi^2+1)F_-^2 - n(\xi^2 - 1)F_-^2 \\
+	0 = -\gamma_d n - G_L(\xi^2-1)F_-^2 - n(\xi^2+1)F_-^2
+\end{gather}
+where $F_-$ may be gained from~\eqref{Fpm}. So
+\begin{gather}
+	0 = \gamma\Lambda - \gamma G_L - \left[G_L - n\lambda\right]\frac{2}{\lambda+1}\frac{\gamma \Lambda - \gamma G_L + \gamma_d n}{2(G_L - n)} \\
+	0 = -\gamma_d n + \left[G_L\lambda - n\right]\frac{2}{\lambda+1}\frac{\gamma \Lambda - \gamma G_L + \gamma_d n}{2(G_L - n)}
+\end{gather}
+Performing subtraction we obtain:
+\begin{gather}
+	0 = \gamma\Lambda - \gamma G_L + \gamma_d n - 2(G_L - n)\frac{\gamma \Lambda - \gamma G_L + \gamma_d n}{2(G_L - n)}
+\end{gather}
+which is identity... (
+
+
+\end{document}
