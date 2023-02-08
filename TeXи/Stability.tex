@@ -119,7 +119,9 @@ and from~\eqref{statir1}--\eqref{statir4} follows (add and subtract 1-3, 2-4 res
 \end{gather}
 where $\xi = \frac{F^0_+}{F^0_-}$. From first two equations we may find representations of $\xi$ combinations:
 \begin{gather}
+	\label{eqxi1}
 	\left(\xi^{-1} + \xi\right) = 2\kappa n \frac{\gamma_p - \alpha\gamma_a}{\gamma_a^2 + \gamma_p^2}\frac{1}{\sin2\psi} \\
+	\label{eqxi2}
 	\left(\xi^{-1} - \xi\right) = 2\kappa n \frac{\gamma_a + \alpha\gamma_p}{\gamma_a^2 + \gamma_p^2}\frac{1}{\cos 2\psi}	
 \end{gather}
 and from 3rd equation now we obtain:
@@ -129,12 +131,13 @@ and from 3rd equation now we obtain:
 \end{equation}
 which may be simplified:
 \begin{equation}
+	\label{eqtan}
 n\gamma_p\left(\gamma_a + \alpha\gamma_p\right) \tan^2 2\psi - \left(G_L - 1\right)\left(\gamma_a^2 + \gamma_p^2\right)\tan 2\psi + n\gamma_a\left(\gamma_p-\alpha\gamma_a\right) = 0
 \end{equation}
 and solved:
 \begin{gather}
 	\tan 2\psi = \frac{(G_L-1)(\gamma_a^2 + \gamma_p^2) \pm \mathcal{A}}{2n\gamma_p(\gamma_a+\alpha\gamma_p)}\\
-	\mathcal{A} = \sqrt{(G_L-1)^2(\gamma_a^2+\gamma_p)^2 - 4n^2\gamma_a\gamma_p(\gamma_a+\alpha\gamma_p)(\gamma_p - \alpha\gamma_a)}
+	\mathcal{A} = \sqrt{(G_L-1)^2(\gamma_a^2+\gamma_p^2)^2 - 4n^2\gamma_a\gamma_p(\gamma_a+\alpha\gamma_p)(\gamma_p - \alpha\gamma_a)}
 \end{gather}
 For $\omega$, in turn, we have:
 \begin{equation}
@@ -172,7 +175,52 @@ Performing subtraction we obtain:
 \begin{gather}
 	0 = \gamma\Lambda - \gamma G_L + \gamma_d n - 2(G_L - n)\frac{\gamma \Lambda - \gamma G_L + \gamma_d n}{2(G_L - n)}
 \end{gather}
-which is identity... (
+which is identity... At least now we have evidence that our calculations are probably right. 
 
+So we need to leave only one equation and find another one. The best choice is probably to multiply eqs~\eqref{eqxi1}--\eqref{eqxi2}, so:
+\begin{equation}
+	\xi^{-2} - \xi^2 = \left(2\kappa n\right)^2\frac{(\gamma_p - \alpha\gamma_a)(\gamma_a + \alpha\gamma_p)}{\left(\gamma_a^2 + \gamma_p^2\right)^2}\frac{1}{\cos2\psi\sin2\psi}
+\end{equation}
+here
+\begin{multline}
+	\frac{1}{\cos2\psi\sin2\psi} = \tan2\psi + \cot2\psi = \frac{(G_L-1)(\gamma_a^2 + \gamma_p^2) \pm \mathcal{A}}{2n\gamma_p(\gamma_a+\alpha\gamma_p)}+ \frac{(G_L-1)(\gamma_a^2 + \gamma_p^2) \mp \mathcal{A}}{2n\gamma_a(\gamma_p-\alpha\gamma_a)} = \\
+	=\frac{(G_L-1)(\gamma_a^2 + \gamma_p^2)(2\gamma_a\gamma_p + \alpha(\gamma_p^2-\gamma_a^2)) \mp \mathcal{A}\alpha\left( \gamma_a^2 + \gamma_p^2 \right)}{2n\gamma_p\gamma_a(\gamma_a+\alpha\gamma_p)(\gamma_p-\alpha\gamma_a)}
+\end{multline}
+where $\cot2\psi$ can be obtained via the property $\cot2\psi = \frac{1}{\tan2\psi}$ from original equation~\eqref{eqtan} divided on $\tan^2 2\psi$.
 
+On the other hand
+\begin{equation}
+	\xi^{-2} - \xi^2 = \frac{1+\lambda}{1-\lambda} - \frac{1-\lambda}{1+\lambda} = \frac{4\lambda}{1-\lambda^2} = 2n\frac{(G_L-1)(\gamma_a^2+2\alpha\gamma_a\gamma_p-\gamma_p^2)\mp\mathcal{A}}{\left(\gamma_a^2+\gamma_p^2\right)\left(G_L-n-1\right)\left(G_L+n-1\right)}
+\end{equation}
+
+Finally
+\begin{equation}
+\frac{(G_L-1)(\gamma_a^2+2\alpha\gamma_a\gamma_p-\gamma_p^2)\mp\mathcal{A}}{\left(G_L-n-1\right)\left(G_L+n-1\right)} = 
+\kappa^2 \frac{(G_L-1)(2\gamma_a\gamma_p + \alpha(\gamma_p^2-\gamma_a^2)) \mp \mathcal{A}\alpha}{\gamma_a\gamma_p}
+\end{equation}
+
+\newpage{}
+
+So, final algorithm will be the follow one:
+\begin{enumerate}
+	\item Solve system for $G_L$ and $n$
+		\begin{equation}
+		\left\{	\begin{aligned}
+				\left[ \gamma\left(\Lambda-G_L\right)G_L + \gamma_d n^2 \right]\frac{(G_L-1)(\gamma_a^2 + \gamma_p^2) \pm \mathcal{A}}{2n\gamma_p(\gamma_p - \alpha\gamma_a)}= \gamma\left(\Lambda-G_L\right)n + \gamma_d G_L n  \\
+				\kappa^2 \frac{(G_L-1)(2\gamma_a\gamma_p + \alpha(\gamma_p^2-\gamma_a^2)) \mp \mathcal{A}\alpha}{\gamma_a\gamma_p} = \frac{(G_L-1)(\gamma_a^2+2\alpha\gamma_a\gamma_p-\gamma_p^2)\mp\mathcal{A}}{\left(G_L-n-1\right)\left(G_L+n-1\right)}
+			\end{aligned}
+		\right.
+		\end{equation}
+	where
+	\begin{equation}
+		\mathcal{A} = \sqrt{(G_L-1)^2(\gamma_a^2+\gamma_p^2)^2 - 4n^2\gamma_a\gamma_p(\gamma_a+\alpha\gamma_p)(\gamma_p - \alpha\gamma_a)}
+	\end{equation}
+	\item
+		Calculate rest variables via formulae:
+		\begin{gather}
+			F_\pm = \sqrt{\frac{\gamma \Lambda - \gamma G_L \mp \gamma_d n}{2(G_L\pm n)}} \\
+			\tan 2\psi = \frac{(G_L-1)(\gamma_a^2 + \gamma_p^2) \pm \mathcal{A}}{2n\gamma_p(\gamma_a+\alpha\gamma_p)}\\
+			\omega = \frac{\kappa}{\gamma_a} \left[-\left(\gamma_p - \alpha \gamma_a\right)\left(G_L - 1\right) +   n \left(\gamma_a + \alpha\gamma_p\right)\tan 2\psi\right]			
+		\end{gather}
+\end{enumerate}
 \end{document}
