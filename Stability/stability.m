@@ -5,6 +5,24 @@ matrix = [0.677517, 0.232726, 0.029356, 0.850996, 0.301431, 0.848926;
           0.933674, 0.942385, 0.752729, 0.856333, 0.632243, 0.0934586;
           0.0396751, 0.596296, 0.122535, 0.224435, 0.625694, 0.503896];
 
+%% Parametres
+g = 1.;
+alpha = 5.;         % Henry factor
+gd = 50.;           % d-decay rate
+k = 1000.;          % photon decay rate
+gp = 8.*2*pi;       % linear anisotropy
+ga = -0.016*2*pi;   % birifrigence
+mu = 2.;            % pump current
+
+% Initial values
+qp0 = 0.9;      
+qm0 = 0.1;
+a0 = 0.14;
+
+eqs = @(x)eq_sys(x, g, alpha, gd, k, gp, ga, mu);
+x0 = [qp0 qm0 a0];
+x = fsolve(eqs,x0)
+
 
 % Here p(i) corresponds to a_{i-1} 
 p=charpoly(matrix);
