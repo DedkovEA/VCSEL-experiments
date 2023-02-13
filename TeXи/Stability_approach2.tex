@@ -1,0 +1,219 @@
+% \documentclass[12pt,a4paper]{article}
+\documentclass[12pt, notitlepage]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+
+\usepackage[left=1in, right=1in, top=1in, bottom=1in]{geometry}
+
+\usepackage{titling}
+%\usepackage{lipsum}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{float}
+%\usepackage[margin=2cm]{geometry}
+\usepackage{caption}
+\usepackage{dsfont}
+
+\pretitle{\begin{center}\Huge\bfseries}
+	\posttitle{\par\end{center}\vskip 0.5em}
+\preauthor{\begin{center}\Large\ttfamily}
+	\postauthor{\end{center}}
+\predate{\par\large\centering}
+\postdate{\par}
+
+\title{Stability of polarizations in VCSEL}
+\author{Evgeniy Dedkov}
+\date{\today}
+\begin{document}
+	
+	\newcommand\scalemath[2]{\scalebox{#1}{\mbox{\ensuremath{\displaystyle #2}}}}
+	\newcommand{\F}{\boldsymbol{\mathfrak{F}}}
+	\newcommand{\n}{\boldsymbol{\mathfrak{n}}}
+	\newcommand{\N}{\boldsymbol{\mathcal{N}}}
+	\newcommand{\Q}{\mathcal{Q}}
+	\newcommand{\gp}{\gamma_{\parallel}}
+	
+	\maketitle
+	\thispagestyle{empty}
+	
+	\begin{abstract}
+		This material derives regions of stability of different polarizations in VCSEL.
+	\end{abstract}
+	
+	\section{Basic equations}
+	We will use the following notation for rate equations of VCSEL:
+	\begin{gather}
+		\dot{E_+} = \frac{1}{2\tau_{ph}}(1+i\alpha)\left[G_L - 1+ \frac{d}{N_{th} - N_{tr}}\right] E_+ - (\gamma_a + i\gamma_p) E_- \\
+		\dot{E_-} = \frac{1}{2\tau_{ph}}(1+i\alpha)\left[G_L - 1- \frac{d}{N_{th} - N_{tr}}\right] E_- - (\gamma_a + i\gamma_p) E_+ \\
+		\dot{N} = \frac{I}{e} - \frac{N}{\tau_e} - \frac{G_L}{\tau_{ph}}(|E_+|^2+|E_-|^2) - \frac{1}{\tau_{ph}}\frac{d}{N_{th} - N_{tr}}(|E_+|^2 - |E_-|^2)\\
+		\dot{d} = -\frac{1}{\tau_d} d -  \frac{G_L}{\tau_{ph}}(|E_+|^2-|E_-|^2) - \frac{1}{\tau_{ph}}\frac{d}{N_{th} - N_{tr}}(|E_+|^2+|E_-|^2)
+	\end{gather}
+	where $G_L = \frac{N - N_{tr}}{N_{th} - N_{tr}}$
+	For simplicity lets introduce:
+	\begin{gather}
+		\F_\pm = \sqrt{\frac{\tau_{e}}{\tau_{ph}(N_{th} - N_{tr)}}}E_\pm \\
+		\n = \frac{d}{N_{th} - N_{tr}} \\
+		\N = G_L
+	\end{gather}
+	So resulting rate equations will be (Roman - 4.32):
+	\begin{gather}
+		\label{main_rate1}
+		\dot{\F_+} = \kappa(1+i\alpha)\left[\N + \n - 1\right] \F_+ - (\gamma_a + i\gamma_p) \F_- \\
+		\dot{\F_-} = \kappa(1+i\alpha)\left[\N - \n - 1\right] \F_- - (\gamma_a + i\gamma_p) \F_+ \\
+		\dot{\N} = \gp\left(\mu-\N\right) - \gp\N(|\F_+|^2+|\F_-|^2) - \gp\n(|\F_+|^2 - |\F_-|^2) \\
+		\label{main_rate4}
+		\dot{\n} = -\gamma_d \n - \gp\N(|\F_+|^2-|\F_-|^2) - \gp\n(|\F_+|^2+|\F_-|^2)
+	\end{gather}
+	
+	\section{Stationary solutions}
+	To obtain stationary solutions for elliptically polarized light we need to substitute
+	\begin{gather*}
+		\F_\pm = \sqrt{\Q_\pm} e^{i(\omega t \pm \psi)}\\
+		\N = \N_s\\
+		\n = \n_s
+	\end{gather*}
+	in \eqref{main_rate1}--\eqref{main_rate4}. We obtain:
+	\begin{gather}
+		\label{stat1}
+		i\omega = \kappa(1+i\alpha)\left[\N_s+ \n_s - 1\right] - (\gamma_a + i\gamma_p) \sqrt{\frac{\Q_-}{\Q_+}} e^{- 2i\psi} \\
+		\label{stat2}
+		i\omega = \kappa(1+i\alpha)\left[\N_s - \n_s - 1\right] - (\gamma_a + i\gamma_p) \sqrt{\frac{\Q_+}{\Q_-}} e^{2i\psi} \\
+		\label{stat3}
+		0 = \gp\left(\mu-\N_s\right) - \gp\N_s(\Q_+ + \Q_-) - \gp\n_s(\Q_+ - \Q_-) \\
+		\label{stat4}
+		0 = -\gamma_d \n_s - \gp\N_s(\Q_+ - \Q_-) - \gp\n_s(\Q_+ + \Q_-)
+	\end{gather}
+
+Lets solve~\eqref{stat3},~\eqref{stat4} for $\N_s$, $n_s$. Here and further we will omit s-indices of stationary values for convenience and readability.
+\begin{gather}
+	\label{eq_N}
+	\N = A\mu\cdot \left[\gp (\Q_+ + \Q_-) + \gamma_d\right] \\
+	\label{eq_n}
+	\n = A\mu\gp(\Q_- - \Q_+) \\
+	A^{-1} = {\gamma_d + \left(\Q_+ +\Q_-\right)\left(\gp + \gamma_d\right) + 4\gp\Q_+\Q_-}
+\end{gather}
+
+	First two equations may be rewritten as:
+	\begin{gather}
+		\label{statir1}
+		0 = \kappa \left[\N+ \n - 1\right] - \gamma_a \sqrt{\frac{\Q_-}{\Q_+}} \cos 2\psi - \gamma_p \sqrt{\frac{\Q_-}{\Q_+}} \sin 2\psi \\
+		\label{statir2}
+		\omega = \alpha\kappa \left[\N+ \n - 1\right] + \gamma_a \sqrt{\frac{\Q_-}{\Q_+}} \sin 2\psi - \gamma_p \sqrt{\frac{\Q_-}{\Q_+}} \cos 2\psi \\
+		\label{statir3}
+		0 = \kappa \left[\N - \n - 1\right] - \gamma_a \sqrt{\frac{\Q_+}{\Q_-}} \cos 2\psi + \gamma_p \sqrt{\frac{\Q_+}{\Q_-}} \sin 2\psi \\
+		\label{statir4}
+		\omega = \alpha\kappa \left[\N- \n - 1\right] - \gamma_a \sqrt{\frac{\Q_+}{\Q_-}} \sin 2\psi - \gamma_p \sqrt{\frac{\Q_+}{\Q_-}} \cos 2\psi
+	\end{gather}
+
+From here we can observe, that if there exist solution $\psi_0, \Q_\pm^0, \omega^0, \N^0, \n^0$, there will exist one more: 
+\begin{gather*}
+	\psi^1 = -\psi^0 \\
+	\Q_\pm^1 = \Q_\mp^0 \\
+	\omega^1 = \omega^0 \\
+	\N^1 = \N^0 \\
+	\n^1 = -\n^0
+\end{gather*}
+
+Taking a look at combinations: \eqref{statir2}-$\alpha$\eqref{statir1} and \eqref{statir4}-$\alpha$\eqref{statir3} one may find representations for $\omega$:
+\begin{gather}
+	\omega = \sqrt{\frac{\Q_-}{\Q_+}}\left[\left(\alpha\gamma_a-\gamma_p\right)\cos2\psi+\left(\gamma_a+\alpha\gamma_p\right)\sin2\psi\right] \\
+	\omega = \sqrt{\frac{\Q_+}{\Q_-}}\left[\left(\alpha\gamma_a-\gamma_p\right)\cos2\psi - \left(\gamma_a+\alpha\gamma_p\right)\sin2\psi\right]
+\end{gather} 
+
+After-all, we are left with 3 equations, which are~\eqref{statir1},~\eqref{statir3} and \eqref{statir2} minus \eqref{statir4}:
+\begin{gather}
+	\kappa\left(A\mu (2\gp\Q_- + \gamma_d) - 1\right) - \sqrt{\frac{\Q_-}{\Q_+}}\left(\gamma_a\cos2\psi + \gamma_p\sin2\psi\right) = 0 \\
+	\kappa\left(A\mu (2\gp\Q_+ + \gamma_d) - 1\right) - \sqrt{\frac{\Q_+}{\Q_-}}\left(\gamma_a\cos2\psi - \gamma_p\sin2\psi\right) = 0 \\
+	2\alpha\kappa A\mu\gp(\Q_- - \Q_+)  + \left( \sqrt{\frac{\Q_+}{\Q_-}} - \sqrt{\frac{\Q_-}{\Q_+}} \right)\gamma_p\cos2\psi + \left( \sqrt{\frac{\Q_+}{\Q_-}} + \sqrt{\frac{\Q_-}{\Q_+}} \right)\gamma_a\sin2\psi = 0
+\end{gather}
+
+All we need is to solve them numerically, which should be performed with appropriate trigonometric substitution.
+
+There are three following reasonable choices:
+\begin{enumerate}
+	\item $$
+	\cos2\psi \rightarrow \pm\sqrt{1-a^2},\qquad \sin2\psi \rightarrow a
+	$$
+	which is used by Roman.
+	\item $$
+	\cos2\psi \rightarrow a,\qquad \sin2\psi \rightarrow \pm\sqrt{1-a^2}
+	$$
+	which is probably the best one, since there are no troubles with sign: we may choose any. However, there are some troubles in wolfram with this one substitution.
+	\item
+	 $$
+	\cos2\psi \rightarrow \frac{1-a^2}{1+a^2},\qquad \sin2\psi \rightarrow \frac{2a}{1+a^2}
+	$$ 
+	which is universal trigonometric substitution.
+\end{enumerate} 
+
+\section{Linearization and stability}
+Since we obtain stationary solutions we should analyze them in terms of stability. For this purpose we propose to linearize initial system and apply Lyapunov conditions. 
+\begin{gather}
+	\F_\pm = \left(\sqrt{\Q_\pm}+a_\pm\right)e^{i(\omega t \pm \psi)} \\
+	\N = \N_s + \Delta \\
+	\n = \n_s + \delta
+\end{gather}
+
+After leaving only first order terms, we end with:
+\newcommand{\bv}{\boldsymbol{v}}
+\newcommand{\bM}{\boldsymbol{M}}
+\begin{equation}
+	\dot{\bv} = \bM\bv
+\end{equation}
+where
+\begin{equation}
+	\bM = \begin{pmatrix}
+		m_{11} & m_{12} & \cdots & m_{16} \\
+		m_{21} & m_{22} & \cdots &m_{26}\\
+		\vdots & \vdots & \ddots & \vdots\\
+		m_{61} & m_{62} & \cdots&  m_{66} 
+	\end{pmatrix}
+\end{equation}
+and for $m_{ij}$:
+\begin{align}
+	m_{11} &= m_{22} = \kappa \left(\N_s + \n_s - 1\right)\\
+	m_{12} &= -m_{21} = -\alpha\kappa\left(\N_s+\n_s-1\right) + \omega\\
+	m_{33} &= m_{44} = \kappa \left(\N_s - \n_s - 1\right) \\
+	m_{34} &= -m_{43} = - \alpha\kappa \left(\N_s - \n_s - 1\right) - \omega \\
+	m_{13} &= m_{24} = -\gamma_a\cos2\psi - \gamma_p\sin2\psi \\
+	m_{14} &= -m_{23} =  \gamma_p\cos2\psi - \gamma_a\sin2\psi \\
+	m_{31} &= m_{42} =  -\gamma_a\cos2\psi + \gamma_p\sin2\psi \\
+	m_{41} &= -m_{32} =  -\gamma_p\cos2\psi - \gamma_a\sin2\psi \\
+	m_{55} &= -\gp\left(\Q_+ + \Q_- \right) - \gp\\
+	m_{66} &= - \gp\left(\Q_+ + \Q_-\right) -\gamma_d \\
+	m_{56} &= m_{65} = \gp\left(\Q_- - \Q_+\right)	\\
+	m_{15} &= m_{16} = \kappa\sqrt{\Q_+}\\
+	m_{25} &= m_{26} = \alpha\kappa\sqrt{\Q_+}\\
+	m_{35} &= -m_{36} = \kappa\sqrt{\Q_-}\\
+	m_{45} &= -m_{46} = \alpha\kappa\sqrt{\Q_-}\\
+	m_{51} &= m_{61} = -2\gp\sqrt{\Q_+}\left(\N_s + \n_s\right) \\
+	m_{53} &= -m_{63} = -2\gp\sqrt{\Q_-}\left(\N_s - \n_s\right) \\
+\end{align}
+
+Next we need to evaluate characteristic polynomial:
+\begin{equation}
+	f(s) = a_0 s^6 + a_1 s^5 + a_2 s^4 + a_3 s^3 + a_4 s ^2 + a_5 s + a_6
+\end{equation}
+and perform analysis via Hurwitz criterion.
+
+Now, lets assume all coefficients are positive (we will check necessary Stodola criterion). So, Hurwitz criterion now can be rewritten:
+\begin{gather}
+	\Delta_2 = a_1 a_2 - a_0 a_3 > 0 \\
+	\Delta_3 = a_3\Delta_2 - a_1^2a_4 + a_5a_0a_1 > 0 \\
+	\Delta_4 = a_4\Delta_3 + a_0a_5(a_2a_3-a_0a_5) -a_1(a_2^2a_5-a_0a_4a_5-a_6\Delta_2) > 0\\
+	\Delta_5 = a_5\Delta_4 + a_6(a_0a_3^3-a_1a_3(a_2a_3+2a_0a_5)+a_1^2(a_3a_4+a_2a_5)-a_1^3a_6) > 0
+\end{gather}
+
+So, algorithm will be the follow:
+\begin{enumerate}
+	\item Obtain stationary values for given parameters
+	\item Construct matrix of linearized system
+	\item Obtain coefficients of characteristic polynomial
+	\item Check necessary Stodola criterion
+	\item Check Hurwitz criterion
+\end{enumerate}
+\end{document}
