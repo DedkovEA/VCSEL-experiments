@@ -178,7 +178,7 @@ and for $m_{ij}$:
 	m_{11} &= m_{22} = \kappa \left(\N_s + \n_s - 1\right)\\
 	m_{12} &= -m_{21} = -\alpha\kappa\left(\N_s+\n_s-1\right) + \omega\\
 	m_{33} &= m_{44} = \kappa \left(\N_s - \n_s - 1\right) \\
-	m_{34} &= -m_{43} = - \alpha\kappa \left(\N_s - \n_s - 1\right) - \omega \\
+	m_{34} &= -m_{43} = - \alpha\kappa \left(\N_s - \n_s - 1\right) + \omega \\
 	m_{13} &= m_{24} = -\gamma_a\cos2\psi - \gamma_p\sin2\psi \\
 	m_{14} &= -m_{23} =  \gamma_p\cos2\psi - \gamma_a\sin2\psi \\
 	m_{31} &= m_{42} =  -\gamma_a\cos2\psi + \gamma_p\sin2\psi \\
@@ -193,6 +193,23 @@ and for $m_{ij}$:
 	m_{51} &= m_{61} = -2\gp\sqrt{\Q_+}\left(\N_s + \n_s\right) \\
 	m_{53} &= -m_{63} = -2\gp\sqrt{\Q_-}\left(\N_s - \n_s\right) \\
 \end{align}
+
+here we may use equalities deriven from~\eqref{statir1}--\eqref{statir4} and \eqref{stat3}, \eqref{stat4} to express coefficients in different form:
+\begin{gather}
+	\kappa \left(\N_s + \n_s - 1\right) = \sqrt{\frac{\Q_-}{\Q_+}} \left( \gamma_a  \cos 2\psi + \gamma_p  \sin 2\psi \right) \\
+	-\alpha\kappa \left(\N_s+ \n_s - 1\right) + \omega  = -\sqrt{\frac{\Q_-}{\Q_+}} \left(\gamma_p  \cos 2\psi - \gamma_a  \sin 2\psi \right) \\
+	\kappa \left(\N_s - \n_s - 1\right) = \sqrt{\frac{\Q_+}{\Q_-}} \left(\gamma_a  \cos 2\psi - \gamma_p \sin 2\psi\right) \\
+	-\alpha\kappa \left(\N_s- \n_s - 1\right) + \omega  = -\sqrt{\frac{\Q_+}{\Q_-}} \left(\gamma_p \cos 2\psi + \gamma_a  \sin 2\psi\right)
+\end{gather}
+so, it's now clear, that:
+\begin{gather*}
+	m_{11} = -\sqrt{\frac{\Q_-}{\Q_+}}m_{13} \\
+	m_{12} = -\sqrt{\frac{\Q_-}{\Q_+}}m_{14} \\
+	m_{33} = -\sqrt{\frac{\Q_+}{\Q_-}}m_{31} \\
+	m_{34} = \sqrt{\frac{\Q_+}{\Q_-}}m_{41} \\
+\end{gather*}
+
+It is better to use defenctions through $\Q_\pm$ and $\psi$ in our approach, since they are obtained through direct numerical solution without any redundant steps, so are more precise.
 
 Next we need to evaluate characteristic polynomial:
 \begin{equation}

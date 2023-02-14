@@ -5,7 +5,7 @@ Qm = in(2);
 s = in(3);
 
 A = 1/(gd + (Qp+Qm)*(g+gd) + 4*g*Qp*Qm);
-c = sqrt(s);
+c = sqrt(1 - s*s);
 
 out(1) = k*(mu*A*(2*g*Qm + gd) - 1) - sqrt(Qm/Qp)*(ga*c + gp*s);
 out(2) = k*(mu*A*(2*g*Qp + gd) - 1) - sqrt(Qp/Qm)*(ga*c - gp*s);
