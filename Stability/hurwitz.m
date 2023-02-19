@@ -9,7 +9,10 @@ function [p, D, x] = hurwitz(x0, g, alpha, gd, k, gp, ga, mu)
 
 %% Solving stationary problem
 eqs = @(x)eq_sys(x, g, alpha, gd, k, gp, ga, mu);
-options = optimset('Display','off');
+options = optimoptions('fsolve','Display','off');
+options.FunctionTolerance = 1e-14;
+options.StepTolerance = 1e-14;
+
 x = fsolve(eqs,x0, options);
 
 Qp = x(1);
@@ -53,7 +56,7 @@ M(5,3) = -2*g*sqrt(Qm)*(N-n);   M(6,3) = -M(5,3);
 
 %% Performing stability analysis
 % Here p(i) corresponds to a_{i-1} 
-p=charpoly(M);
+p=fastCharPoly(M);
 D = zeros(1,5);
 if all(p >= 0) 
     D(1) = p(2);

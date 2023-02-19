@@ -166,6 +166,17 @@ After leaving only first order terms, we end with:
 \end{equation}
 where
 \begin{equation}
+	\bv = \begin{pmatrix}
+		\Re\left\{a_+\right\} \\
+		\Im\left\{a_+\right\} \\
+		\Re\left\{a_-\right\} \\
+		\Im\left\{a_-\right\} \\
+		\Delta \\
+		\delta
+	\end{pmatrix}
+\end{equation}
+
+\begin{equation}
 	\bM = \begin{pmatrix}
 		m_{11} & m_{12} & \cdots & m_{16} \\
 		m_{21} & m_{22} & \cdots &m_{26}\\
@@ -211,19 +222,62 @@ so, it's now clear, that:
 
 It is better to use defenctions through $\Q_\pm$ and $\psi$ in our approach, since they are obtained through direct numerical solution without any redundant steps, so are more precise.
 
+One more we should note about $\bM$ is that:
+\begin{equation}
+	\det\bM = 0
+\end{equation}
+since
+\begin{equation}
+	\bM \begin{pmatrix}
+		0 & \sqrt{Q_+} &  0 & \sqrt{Q_-} & 0 & 0
+	\end{pmatrix}^T = 0
+\end{equation}
+
+This proof could be found from notion, that we can choose arbitrary phase, so for every $\varphi$ $\F_\pm = \sqrt{\Q_\pm}\exp\left\{ i(\omega t \pm \psi + \varphi) \right\}$ will be also the solution for stationary problem, so we may expect appropriate $a_\pm$ to be the proof of zero-determinant. However:
+\begin{equation}
+	\bM \begin{pmatrix}
+		-\sqrt{Q_+}(1-\cos\varphi) \\
+		\sqrt{Q_+}\sin\varphi \\
+		-\sqrt{Q_-}(1-\cos\varphi) \\
+		\sqrt{Q_-}\sin\varphi \\
+		0 \\
+		0
+	\end{pmatrix} = \begin{pmatrix}
+	0 \\
+	0 \\
+	0 \\
+	0 \\
+	4\gp (\mu - \N_s)\sin^2\frac{\varphi}{2} \\
+	-4\gp \gamma_d\n_s\sin^2\frac{\varphi}{2}
+\end{pmatrix}
+\end{equation}
+which is quadratic on $\varphi \ll 1$. So, performing partial differentiation on both sides we obtain:
+\begin{equation}
+	\bM \begin{pmatrix}
+		0 & \sqrt{Q_+} &  0 & \sqrt{Q_-} & 0 & 0
+	\end{pmatrix}^T = 0
+\end{equation}
+which proves that determinant of $\bM$ is zero.
+
 Next we need to evaluate characteristic polynomial:
 \begin{equation}
-	f(s) = a_0 s^6 + a_1 s^5 + a_2 s^4 + a_3 s^3 + a_4 s ^2 + a_5 s + a_6
+	f(s) = a_0 s^6 + a_1 s^5 + a_2 s^4 + a_3 s^3 + a_4 s ^2 + a_5 s
 \end{equation}
-and perform analysis via Hurwitz criterion.
+and perform analysis via Hurwitz criterion. One may argue on its inapplicability since we have non-positive zero coefficient $a_7$. But, the zero root we obtain cannot lead to anything, but initial phase change. So small perturbations in it have no effect on the system at all. So, we may just ignore it and perform analysis with the rest of characteristic polynomial.
 
 Now, lets assume all coefficients are positive (we will check necessary Stodola criterion). So, Hurwitz criterion now can be rewritten:
 \begin{gather}
 	\Delta_2 = a_1 a_2 - a_0 a_3 > 0 \\
-	\Delta_3 = a_3\Delta_2 - a_1^2a_4 + a_5a_0a_1 > 0 \\
-	\Delta_4 = a_4\Delta_3 + a_0a_5(a_2a_3-a_0a_5) -a_1(a_2^2a_5-a_0a_4a_5-a_6\Delta_2) > 0\\
-	\Delta_5 = a_5\Delta_4 + a_6(a_0a_3^3-a_1a_3(a_2a_3+2a_0a_5)+a_1^2(a_3a_4+a_2a_5)-a_1^3a_6) > 0
+	\Delta_4 = -a_1^2 a_4^2 + a_1 (a_2 a_3 a_4 - a_2^2 a_5 + 2 a_0 a_4 a_5) - 
+	a_0 (a_3^2 a_4 - a_2 a_3 a_5 + a_0 a_5^2) > 0
 \end{gather}
+
+%\begin{gather}
+%	\Delta_2 = a_1 a_2 - a_0 a_3 > 0 \\
+%	\Delta_3 = a_3\Delta_2 - a_1^2a_4 + a_5a_0a_1 > 0 \\
+%	\Delta_4 = a_4\Delta_3 + a_0a_5(a_2a_3-a_0a_5) -a_1(a_2^2a_5-a_0a_4a_5-a_6\Delta_2) > 0\\
+%	\Delta_5 = a_5\Delta_4 + a_6(a_0a_3^3-a_1a_3(a_2a_3+2a_0a_5)+a_1^2(a_3a_4+a_2a_5)-a_1^3a_6) > 0
+%\end{gather}
 
 So, algorithm will be the follow:
 \begin{enumerate}
@@ -233,4 +287,80 @@ So, algorithm will be the follow:
 	\item Check necessary Stodola criterion
 	\item Check Hurwitz criterion
 \end{enumerate}
+
+\subsection{Linear polarizations and stability}
+It can be shown, that in case of linear polarization, which means $\Q_+=\Q_-=\Q$ equations~\eqref{stat3}--\eqref{stat4}, \eqref{statir1}--\eqref{statir4} become much simpler, and one may obtain analytical solution for x-polarization:
+\begin{gather}
+	\Q^{(x)} = \frac{1}{2} \left(\frac{\kappa  \mu }{\gamma_a + \kappa } - 1\right)\\
+	\omega^{(x)} = \alpha \gamma_a - \gamma_p\\
+	\psi^{(x)} = 0\\
+	\N_s^{(x)} = \frac{\mu}{1+2\Q} = 1 + \frac{\gamma_a}{\kappa}\\
+	\n_s^{(x)} = 0
+\end{gather}
+and for y-polarization:
+\begin{gather}
+	\Q^{(y)} = \frac{1}{2} \left(\frac{\kappa  \mu }{\kappa - \gamma_a } - 1\right)\\
+	\omega^{(y)} = -\alpha \gamma_a + \gamma_p\\
+	\psi^{(y)} = \frac{\pi}{2}\\
+	\N_s^{(y)} = \frac{\mu}{1+2\Q} = 1 - \frac{\gamma_a}{\kappa}\\
+	\n_s^{(y)} = 0
+\end{gather}
+
+Note, that there can be no other variants of linear polarization. 
+
+Then one should perform stability analysis. For this purpose wi will rewrite linearized equations in terms of new variables:
+\begin{gather}
+	R_+ = \Re a_+ + \Re a_- \\
+	I_+ = \Im a_+ + \Im a_- \\
+	R_- = \Re a_+ - \Re a_- \\
+	I_- = \Im a_+ - \Im a_-
+\end{gather}
+then, we obtain two independent systems:
+\begin{gather}
+	\left\{\begin{align}
+		&\dot{R}_+ = 2\kappa\sqrt{\Q}\Delta \\
+		&\dot{I}_+ = 2\alpha\kappa\sqrt{\Q}\Delta \\
+		&\dot{\Delta} = -2\gp\sqrt{\Q}\N_s R_+ - \gp(1+2\Q)\Delta
+	\end{align}\right.\\
+	\left\{\begin{align}
+		&\dot{R}_- = \pm2\gamma_a R_- \mp 2\gamma_p I_- + 2\kappa\sqrt{\Q}\delta \\
+		&\dot{I}_- = \pm2\gamma_p R_- \pm 2\gamma_a I_- + 2\alpha\kappa\sqrt{\Q}\delta \\
+		&\dot{\delta} = -2\gp\sqrt{\Q}\N_s R_- - (2\gp\Q + \gamma_d)\delta
+	\end{align}\right.
+\end{gather}
+for x- and y- polarization respectively.
+
+For the first system we have characteristic polynomial coefficients:
+\begin{gather}
+	a_0 = 1\\
+	a_1 = \gp(1+2\Q)\\
+	a_2 = 4\gp\kappa\Q\N_s \\
+	a_3 = 0
+\end{gather}
+which gives only trivial condition $\N_s > 0$.
+
+For the second system:
+\begin{gather}
+	b_0 = 1\\
+	b_1 = 2\gp\Q +\gamma_d \mp 4\gamma_a \\
+	b_2 = 4 \left(\gamma_a^2 + \gamma_p^2 \mp \gamma_a\gamma_d \mp 2 \gp\gamma_a\Q\right)  + 4\gp\kappa\Q \N_s\\
+	b_3 = 4 \left(\gamma_a^2+\gamma_p^2\right) (\gamma_d + 2 \gp\Q) \mp 8 \gp\kappa\Q (\gamma_a + \alpha  \gamma_p)\N_s
+\end{gather}
+is much more complicated. We need to satisfy the following conditions:
+\begin{gather}
+	b_1 > 0,\\
+	b_3 > 0,\\
+	b_1b_2 - b_3 > 0,
+\end{gather}
+which after substitution becomes (for x-polarization):
+\begin{gather}
+	\mu > \frac{(\gamma_a+\kappa ) (\gp +4 \gamma_a - \gamma_d)}{\gp  \kappa },\\
+	\mu < \frac{(\gamma_a+\kappa ) \left(\gp  \gamma_a (\alpha  \gamma_p+\kappa )+\gamma_p (\alpha  \gp  \kappa -\gp  \gamma_p+\gamma_d \gamma_p)+\gamma_a^2 \gamma_d\right)}{\gp  \kappa  \left(\alpha  \gamma_p (\gamma_a+\kappa )+\gamma_a \kappa -\gamma_p^2\right)},\\
+	\begin{aligned}
+	\mu > \frac{\gamma_a+\kappa }{\kappa } + \frac{\gamma_a+\kappa }{2 \gp ^2 \kappa ^2 (\gamma_a-\kappa )}\left[
+	\gp  \kappa  \left(\gamma_a (2 \alpha  \gamma_p-3 \gamma_d-2 \kappa )+\kappa  (2 \alpha  \gamma_p+\gamma_d)+6 \gamma_a^2\right)
+	\right] + \\
+	+ \sqrt{\gp ^2 \kappa ^2 \left(\gamma_a^2 \left(4 \left(\alpha ^2-8\right) \gamma_p^2+12 \alpha  \gamma_p (2 \gamma_a-\gamma_d)+(\gamma_d-2 \gamma_a)^2\right)+2 \gamma_a \kappa  \left(4 \left(\alpha ^2+4\right) \gamma_p^2+4 \alpha  \gamma_p (2 \gamma_a-\gamma_d)+(\gamma_d-2 \gamma_a)^2\right)+\kappa ^2 (2 \alpha  \gamma_p-2 \gamma_a+\gamma_d)^2\right)}
+	\end{aligned}
+\end{gather}
 \end{document}
