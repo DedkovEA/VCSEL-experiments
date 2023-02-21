@@ -18,6 +18,21 @@
 \usepackage{caption}
 \usepackage{dsfont}
 
+\makeatletter
+\newenvironment{sqcases}{%
+	\matrix@check\sqcases\env@sqcases
+}{%
+	\endarray\right.%
+}
+\def\env@sqcases{%
+	\let\@ifnextchar\new@ifnextchar
+	\left\lbrack
+	\def\arraystretch{1.2}%
+	\array{@{}l@{\quad}l@{}}%
+}
+\makeatother
+
+
 \pretitle{\begin{center}\Huge\bfseries}
 	\posttitle{\par\end{center}\vskip 0.5em}
 \preauthor{\begin{center}\Large\ttfamily}
@@ -57,7 +72,8 @@
 	\begin{gather}
 		\F_\pm = \sqrt{\frac{\tau_{e}}{\tau_{ph}(N_{th} - N_{tr)}}}E_\pm \\
 		\n = \frac{d}{N_{th} - N_{tr}} \\
-		\N = G_L
+		\N = G_L \\
+		\mu = \frac{\frac{I}{e} \tau_e - N_{tr}}{N_{th} - N_{tr}}
 	\end{gather}
 	So resulting rate equations will be (Roman - 4.32):
 	\begin{gather}
@@ -308,6 +324,8 @@ and for y-polarization:
 
 Note, that there can be no other variants of linear polarization. 
 
+Further without losing generality we will assume x-polarization to have $\gamma_p > 0$.
+
 Then one should perform stability analysis. For this purpose wi will rewrite linearized equations in terms of new variables:
 \begin{gather}
 	R_+ = \Re a_+ + \Re a_- \\
@@ -352,15 +370,85 @@ is much more complicated. We need to satisfy the following conditions:
 	b_3 > 0,\\
 	b_1b_2 - b_3 > 0,
 \end{gather}
-which after substitution becomes (for x-polarization):
+which after substitution becomes (for x-polarization\footnote{For y-polarization one may simply change signs of $\gamma_p$ and $\gamma_a$ in further expressions}):
 \begin{gather}
 	\mu > \frac{(\gamma_a+\kappa ) (\gp +4 \gamma_a - \gamma_d)}{\gp  \kappa },\\
-	\mu < \frac{(\gamma_a+\kappa ) \left(\gp  \gamma_a (\alpha  \gamma_p+\kappa )+\gamma_p (\alpha  \gp  \kappa -\gp  \gamma_p+\gamma_d \gamma_p)+\gamma_a^2 \gamma_d\right)}{\gp  \kappa  \left(\alpha  \gamma_p (\gamma_a+\kappa )+\gamma_a \kappa -\gamma_p^2\right)},\\
+	\left\{
 	\begin{aligned}
-	\mu > \frac{\gamma_a+\kappa }{\kappa } + \frac{\gamma_a+\kappa }{2 \gp ^2 \kappa ^2 (\gamma_a-\kappa )}\left[
-	\gp  \kappa  \left(\gamma_a (2 \alpha  \gamma_p-3 \gamma_d-2 \kappa )+\kappa  (2 \alpha  \gamma_p+\gamma_d)+6 \gamma_a^2\right)
-	\right] + \\
-	+ \sqrt{\gp ^2 \kappa ^2 \left(\gamma_a^2 \left(4 \left(\alpha ^2-8\right) \gamma_p^2+12 \alpha  \gamma_p (2 \gamma_a-\gamma_d)+(\gamma_d-2 \gamma_a)^2\right)+2 \gamma_a \kappa  \left(4 \left(\alpha ^2+4\right) \gamma_p^2+4 \alpha  \gamma_p (2 \gamma_a-\gamma_d)+(\gamma_d-2 \gamma_a)^2\right)+\kappa ^2 (2 \alpha  \gamma_p-2 \gamma_a+\gamma_d)^2\right)}
+		\mu &< \boldsymbol{\mu}_x, \quad \alpha  \gamma_p (\gamma_a+\kappa )+\gamma_a \kappa -\gamma_p^2 > 0  \\
+		\mu &> \boldsymbol{\mu}_x,\quad \alpha  \gamma_p (\gamma_a+\kappa )+\gamma_a \kappa -\gamma_p^2 < 0  \\
+		\boldsymbol{\mu}_x &= 1 + \frac{\gamma_a}{\kappa } +  \frac{\gamma_d \left(\gamma_a^2+\gamma_p^2\right) (\gamma_a+\kappa )}{\gp  \kappa  \left(\alpha \gamma_p (\gamma_a + \kappa)+ \gamma_a \kappa -\gamma_p^2\right)}
+		%\frac{(\gamma_a+\kappa ) \left(\gp  \gamma_a (\alpha  \gamma_p+\kappa )+\gamma_p (\alpha  \gp  \kappa -\gp  \gamma_p+\gamma_d \gamma_p)+\gamma_a^2 \gamma_d\right)}{\gp  \kappa  \left(\alpha  \gamma_p (\gamma_a+\kappa )+\gamma_a \kappa -\gamma_p^2\right)}
 	\end{aligned}
+	\right.\\
+	\mu < \frac{(\gamma_a+\kappa ) \left(\gp  \gamma_a (\alpha  \gamma_p+\kappa )+\gamma_p (\alpha  \gp  \kappa -\gp  \gamma_p+\gamma_d \gamma_p)+\gamma_a^2 \gamma_d\right)}{\gp  \kappa  \left(\alpha  \gamma_p (\gamma_a+\kappa )+\gamma_a \kappa -\gamma_p^2\right)},\\
+	\left[ \begin{aligned}
+		\mu < \frac{-\mathfrak{B} - \sqrt{\mathfrak{B}^2 - 4\mathfrak{A}\mathfrak{C}}}{2\mathfrak{A}} \\
+		\mu > \frac{-\mathfrak{B} + \sqrt{\mathfrak{B}^2 - 4\mathfrak{A}\mathfrak{C}}}{2\mathfrak{A}} 
+	\end{aligned} \right. \\
+	\mathfrak{A} = \frac{2 \gp ^2 \kappa ^2 (\kappa -\gamma_a)}{(\gamma_a+\kappa )^2}\\
+	\mathfrak{B} = 
+	\frac{2 \gp  \kappa  \left(\gamma_a (2 \alpha  \gamma_p-3 \gamma_d-2 \kappa )+\kappa  (2 \alpha  \gamma_p+\gamma_d)+2 \gp  (\gamma_a-\kappa )+6 \gamma_a^2\right)}{\gamma_a+\kappa }\\
+	\mathfrak{C} = 2 \gp  \kappa  (-2 \alpha  \gamma_p+\gp +2 \gamma_a-\gamma_d)-2 \gamma_a \left(\gp  (2 \alpha  \gamma_p+6 \gamma_a-3 \gamma_d)+\gp ^2+2 (\gamma_d-2 \gamma_a)^2+8 \gamma_p^2\right)
 \end{gather}
+
+It's almost impossible to analyze such equations, so lets take a look at them with $\gamma_a = 0$:
+\begin{align}
+		&\mu > 1 - \frac{\gamma_d}{\gp} \\
+		&\hspace{-13pt} \left\{ \begin{aligned}
+			\mu &< 1 + \frac{\gamma_d\gamma_p}{\gp (\alpha\kappa - \gamma_p)},\quad \gamma_p(\alpha\kappa - \gamma_p) > 0 \\
+			\mu &> 1 + \frac{\gamma_d\gamma_p}{\gp (\alpha\kappa - \gamma_p)},\quad \gamma_p(\alpha\kappa - \gamma_p) < 0
+		\end{aligned}\right.\\
+		& \hspace{-9pt} \left[ \begin{aligned}
+			\mu &< 1 - \frac{\gamma_d + 2 \alpha  \gamma_p+| \gamma_d+2 \alpha  \gamma_p|}{2 \gp } \\
+			\mu &> 1 + \frac{-\gamma_d -2 \alpha  \gamma_p+| \gamma_d+2 \alpha  \gamma_p|}{2 \gp }
+		\end{aligned}\right.
+\end{align}
+
+Lets analyze the stability of x-polarization. In this case first, and third relations are obviously true when $\mu > 1$, which is necessary condition for laser to emit light. So only one inequality is sufficient:
+\begin{equation}
+	\mu \lessgtr 1 + \frac{\gamma_d\gamma_p}{\gp (\alpha\kappa - \gamma_p)}
+\end{equation}
+Here the case of negative denominater leads to obvious inequality, so if $\gamma_p > \alpha\kappa$ x-polarization is always stable.
+
+If $\gamma_a \ne 0$ we will obtain:
+\begin{equation}
+	\mu \lessgtr 1 + \frac{\gamma_a}{\kappa } +  \frac{\gamma_d \left(\gamma_a^2+\gamma_p^2\right) (\gamma_a+\kappa )}{\gp  \kappa  \left(\alpha \gamma_p (\gamma_a + \kappa)+ \gamma_a \kappa -\gamma_p^2\right)}
+\end{equation}
+
+%\begin{equation}
+%	\mu \lessgtr \frac{(\gamma_a+\kappa ) \left(\alpha\gp  \gamma_p(\gamma_a + \kappa) + \gp\gamma_a\kappa - \gp\gamma_p^2 + \gamma_d(\gamma_p^2 + \gamma_a^2)\right)}
+%	{\gp  \kappa  \left(\gamma_a (\alpha  \gamma_p  + \kappa)+ \gamma_p (\alpha\kappa -\gamma_p)\right)}
+%\end{equation}
+which is also less then one in case of negative denominater, and though trivial. So only the following pair of inequalities determine the x-polarization stability region:
+\begin{equation}
+	\left[\begin{split}
+		\mu < 1 + \frac{\gamma_a}{\kappa } &+  \frac{\gamma_d \left(\gamma_a^2+\gamma_p^2\right) (\gamma_a+\kappa )}{\gp  \kappa  \left(\alpha \gamma_p (\gamma_a + \kappa)+ \gamma_a \kappa -\gamma_p^2\right)}\\
+		\gamma_p &(\gamma_a+\kappa )+\gamma_a \kappa -\gamma_p^2 < 0
+	\end{split}	\right.
+\end{equation}
+
+For y-polarization one should change sign of $\gamma_p$ and $\gamma_a$, so it can be found, that first inequality is still obvious, but the second and third ones is now sufficiently truncate stable region. So, in case of y-polarization and $\gamma_a = 0$ we need to satisfy:
+\begin{align}
+	&\mu > 1 - \frac{\gamma_d\gamma_p}{\gp (\alpha\kappa + \gamma_p)}\\	
+	& \hspace{-9pt} \left[ \begin{aligned}
+		\mu &< 1 - \frac{\gamma_d - 2 \alpha  \gamma_p+| \gamma_d-2 \alpha  \gamma_p|}{2 \gp } = \begin{cases}
+			1, &\gamma_d < 2\alpha\gamma_p\\
+			1 - \frac{\gamma_d - 2 \alpha  \gamma_p}{\gp }, &\gamma_d > 2\alpha\gamma_p
+		\end{cases} \\
+		\mu &> 1 + \frac{-\gamma_d +2 \alpha  \gamma_p+| \gamma_d-2 \alpha  \gamma_p|}{2 \gp } = 
+		\begin{cases}
+			1 + \frac{2 \alpha  \gamma_p - \gamma_d}{\gp }, &\gamma_d < 2\alpha\gamma_p\\
+			1, &\gamma_d > 2\alpha\gamma_p
+		\end{cases}
+	\end{aligned}\right.
+\end{align}
+The first inequality here is obviously true if $\mu > 1$. The second pair give:
+\begin{equation}
+		\mu > 1 + \frac{2 \alpha  \gamma_p - \gamma_d}{\gp}
+\end{equation}
+If $\gamma_a \ne 0$ we obtain:
+\begin{equation}
+	\boldsymbol{\mu}_y^- = 1 - \frac{\gamma_a}{\kappa} + \dots
+\end{equation}
 \end{document}
