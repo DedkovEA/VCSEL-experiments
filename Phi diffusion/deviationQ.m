@@ -6,21 +6,24 @@ kappa = 300;           % Field decay rate
 gamma = 1;            % Carrier decay rate
 gamma_d = 50;         % Spin-flip relaxation rate
 gamma_a = -0.1;         % Linear dichroism 
-gamma_p = 2*pi*10;          % Linear birefringence
+gamma_p = 2*pi*32;          % Linear birefringence
 
 mu = 2;                  % Pump current
 
-C_sp = 1*10^-7;         % Intensety of noise
+C_sp = 1*10^-5;         % Intensety of noise
 N_th = 6.25e6;    % Carrier number at threshold
 N_tr = 5.935e6;        % Carrier number at transparency
 M = N_tr/(N_th - N_tr);
 
-Dt = 1e-5;          % Time step
-T = 200;             % Time for solving in ns
+Dt = 1e-7;          % Time step
+T = 2;             % Time for solving in ns
+
+
+%% Initializating variables---------------------------------------------
+
 time = 0:Dt:T;
 L = length(time);
 
-%Initializating variables---------------------------------------------
 flag_noise = true; % Flag of noise
 Qp = zeros(1,L); % X-LP mode
 Qm = zeros(1,L); % Y-LP mode
@@ -28,20 +31,35 @@ psi = zeros(1,L);
 G = zeros(1,L);  % Total carrier inversion
 d = zeros(1,L);  % The difference between carrier inversions with opposite spins
 
-G(1) = 1;
-Qp(1) = 0.5;
-Qm(1) = 0.5;
+Q = 1/2*(kappa*mu/(gamma_a + kappa) - 1);
 
-%---------------------------------------------------------------------
-%Simulating of time series of the X-LP and Y-LP light intensities-----
+Q = (-gamma_a + kappa*(mu-1+2*M*C_sp) + sqrt(4*(2*C_sp-1)*kappa*mu*(gamma_a+kappa) + (gamma_a+kappa*(1+2*C_sp*M+mu))*(gamma_a+kappa*(1+2*C_sp*M+mu))) )/(4*(gamma_a+kappa));
 
-gamma_p = 2*pi*0.05;
+G(1) = mu/(1 + 2*Q);
+Qp(1) = Q;
+Qm(1) = Q;
+
+gamma_p = 13.0008;
+
+Lmat = [2*kappa*(G(1)-1), -8*Q*gamma_p, 4*kappa*(C_sp+Q);
+        gamma_p/2/Q, 2*gamma_a, alpha*kappa;
+        -G(1)*gamma, 0, -gamma_d-2*gamma*Q];
+cp = charpoly(Lmat);
+hurwitz = [cp(2), cp(4), cp(2)*cp(3)-cp(4)];
+if sum(hurwitz <= 0) > 0
+    psi(1) = pi/2;
+end
+
+%% ---------------------------------------------------------------------
+%% Simulating of time series of the X-LP and Y-LP light intensities-----
+
 tic;
 ksi_plus = wgn(1, L, 0);
 ksi_minus = wgn(1, L, 0);
 ksi_psi = wgn(1, L, 0);
 Fp = 0; Fm = 0; Fpsi = 0;
 
+flag_noise = true;
 for i = 1:1:L-1
     if(flag_noise)
         Fp = 2*sqrt(C_sp*kappa*Qp(i)*(G(i)+d(i)+M))*ksi_plus(i);
@@ -151,3 +169,7 @@ plot(time,psi,'b');
 plot(time,G,'k');
 plot(time,d,'m');
 hold off;
+
+% tic;
+% FindPsiStd(T, Dt, gamma, kappa, alpha, gamma_d, gamma_p, gamma_a, mu, C_sp, N_th, N_tr)
+% toc;
