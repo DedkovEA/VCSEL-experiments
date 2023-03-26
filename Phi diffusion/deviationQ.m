@@ -15,14 +15,18 @@ N_th = 6.25e6;    % Carrier number at threshold
 N_tr = 5.935e6;        % Carrier number at transparency
 M = N_tr/(N_th - N_tr);
 
-Dt = 1e-7;          % Time step
-T = 2;             % Time for solving in ns
+Dt = 1e-5;          % Time step
+T = 200;             % Time for solving in ns
 
 
 %% Initializating variables---------------------------------------------
 
 time = 0:Dt:T;
 L = length(time);
+
+
+gamma_p = 0.1;
+mu = 21;
 
 flag_noise = true; % Flag of noise
 Qp = zeros(1,L); % X-LP mode
@@ -39,7 +43,6 @@ G(1) = mu/(1 + 2*Q);
 Qp(1) = Q;
 Qm(1) = Q;
 
-gamma_p = 13.0008;
 
 Lmat = [2*kappa*(G(1)-1), -8*Q*gamma_p, 4*kappa*(C_sp+Q);
         gamma_p/2/Q, 2*gamma_a, alpha*kappa;
@@ -161,14 +164,14 @@ toc;
 
 
 %% Plotting
-devPsi = std(psi(ceil(0.2*L):end))
-plot(time,Qp,'k',"LineWidth",1);
-hold on;
-plot(time,Qm,'r');
-plot(time,psi,'b');
-plot(time,G,'k');
-plot(time,d,'m');
-hold off;
+% devPsi = std(psi(ceil(0.2*L):end))
+% plot(time,Qp,'k',"LineWidth",1);
+% hold on;
+% plot(time,Qm,'r');
+% plot(time,psi,'b');
+% plot(time,G,'k');
+% plot(time,d,'m');
+% hold off;
 
 % tic;
 % FindPsiStd(T, Dt, gamma, kappa, alpha, gamma_d, gamma_p, gamma_a, mu, C_sp, N_th, N_tr)
