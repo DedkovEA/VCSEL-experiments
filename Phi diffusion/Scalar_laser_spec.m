@@ -33,23 +33,37 @@ G(1) = 1;
 
 %% ---------------------------------------------------------------------
 %% Simulating of time series of the X-LP and Y-LP light intensities-----
+AV = 100;
+avspec = zeros(1, L);
 
 tic;
-ksi_Q = wgn(1, L, 0);
-ksi_phi = wgn(1, L, 0);
-Fq = 0; Fp = 0;
+for j=1:AV
 
-flag_noise = true;
-for i = 1:1:L-1
-    if(flag_noise)
-        Fq = sqrt(2*C_sp*R_sp*Q(i))*ksi_Q(i);
-        Fp = sqrt(C_sp*R_sp/2/Q(i))*ksi_phi(i);
+    ksi_Q = wgn(1, L, 0);
+    ksi_phi = wgn(1, L, 0);
+    Fq = 0; Fp = 0;
+    
+    flag_noise = true;
+    for i = 1:1:L-1
+        if(flag_noise)
+            Fq = sqrt(2*C_sp*R_sp*Q(i))*ksi_Q(i);
+            Fp = sqrt(C_sp*R_sp/2/Q(i))*ksi_phi(i);
+        end
+        Q(i+1) = Q(i) + (2*kappa*(G(i)-1)*Q(i) + C_sp*R_sp)*Dt + Fq*sqrt(Dt);
+        phi(i+1) = phi(i) + (alpha*kappa*(G(i)-1))*Dt + Fp*sqrt(Dt);
+        G(i+1) = G(i) + (mu*gamma - gamma*G(i) - 2*kappa/Gamma*G(i)*Q(i))*Dt;
     end
-    Q(i+1) = Q(i) + (2*kappa*(G(i)-1)*Q(i) + C_sp*R_sp)*Dt + Fq*sqrt(Dt);
-    phi(i+1) = phi(i) + (alpha*kappa*(G(i)-1))*Dt + Fp*sqrt(Dt);
-    G(i+1) = G(i) + (mu*gamma - gamma*G(i) - 2*kappa/Gamma*G(i)*Q(i))*Dt;
+
+    spec = abs(fftshift(fft(Q.*exp(1i * phi)))).^2;
+    avspec = avspec + spec;
 end
 toc;
+
+avspec = avspec ./ L;
+freqs = 2*pi*(-L/2:L/2-1)/L/Dt;
+
+wnd = 2000;
+plot(freqs(floor(L/2-wnd):ceil(L/2+wnd)), abs(avspec(floor(L/2-wnd):ceil(L/2+wnd))));
 
 
 % plot(time,Q,'k',"LineWidth",1);
@@ -57,15 +71,3 @@ toc;
 % plot(time,phi,'b');
 % plot(time,G,'r');
 % hold off;
-
-tic
-[ac, lags] = xcorr(sqrt(Q).*exp(1i * phi),ceil(L/2),'unbiased');
-spec = sgolayfilt(abs(fftshift(fft(ac(1:L)))), 3, 7 )/L;
-spec = spec ./ max(abs(spec));
-freqs = 2*pi*(-L/2:L/2-1)/L/Dt;
-toc
-spec2 = sgolayfilt(abs(fftshift(fft(Q.*exp(1i * phi)))).^2, 3, 7) / L;
-spec2 = spec2 ./ max(abs(spec2));
-plot(freqs(L/2-2000:L/2+2000), spec(L/2-2000:L/2+2000));
-hold on
-plot(freqs(L/2-2000:L/2+2000), spec2(L/2-2000:L/2+2000));
