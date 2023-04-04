@@ -4,7 +4,7 @@
 alpha = 5;              % Linewidth enhancement factor
 kappa = 300;           % Field decay rate
 gamma = 1;            % Carrier decay rate
-gamma_d = 500;         % Spin-flip relaxation rate
+gamma_d = 1500;         % Spin-flip relaxation rate
 gamma_a = -0.1;         % Linear dichroism 
 gamma_p = 2*pi*32;          % Linear birefringence
 
@@ -15,8 +15,8 @@ N_th = 6.25e6;    % Carrier number at threshold
 N_tr = 5.935e6;        % Carrier number at transparency
 M = N_tr/(N_th - N_tr);
 
-Dt = 1e-5;          % Time step
-T = 200;             % Time for solving in ns
+Dt = 3e-6;          % Time step
+T = 100;             % Time for solving in ns
 
 
 %% Initializating variables---------------------------------------------
@@ -24,10 +24,15 @@ T = 200;             % Time for solving in ns
 time = 0:Dt:T;
 L = length(time);
 
-AV = 20;
-wnd = 100000;
-specsx = zeros(AV, 2*wnd);
-specsy = zeros(AV, 2*wnd);
+AV = 200;                     % Number for simulations to obtain average
+wndfreq = 2000;               % Spectra will be saved only in +-wmdfreq
+wnd = wndfreq*L*Dt/2/pi;
+
+freqs = 2*pi*(-L/2:L/2-1)/L/Dt; 
+freqswnd = freqs(floor(L/2-wnd):floor(L/2-wnd)+ceil(2*wnd-1));
+
+specsx = zeros(AV, length(freqswnd));
+specsy = zeros(AV, length(freqswnd));
 
 tic
 for j = 1:AV
@@ -61,10 +66,14 @@ for j = 1:AV
     %% ---------------------------------------------------------------------
     %% Simulating of time series of the X-LP and Y-LP light intensities-----
     
-    ksi_plus = wgn(1, L, 0);
-    ksi_minus = wgn(1, L, 0);
-    ksi_phi = wgn(1, L, 0);
-    ksi_psi = wgn(1, L, 0);
+%     ksi_plus = wgn(1, L, 0);
+%     ksi_minus = wgn(1, L, 0);
+%     ksi_phi = wgn(1, L, 0);
+%     ksi_psi = wgn(1, L, 0);
+    ksi_plus = normrnd(0, 1, 1,L);
+    ksi_minus = normrnd(0, 1, 1,L);
+    ksi_phi = normrnd(0, 1, 1,L);
+    ksi_psi = normrnd(0, 1, 1,L);
     Fp = 0; Fm = 0; Fpsi = 0; Fphi = 0;
     
     flag_noise = true;
@@ -82,24 +91,26 @@ for j = 1:AV
         psi(i+1) = psi(i) + (alpha*kappa*d(i) + 1/2/sqrt(Qm(i)*Qp(i))*( (Qp(i)-Qm(i))*gamma_p*cos(2*psi(i)) + (Qp(i)+Qm(i))*gamma_a*sin(2*psi(i)) ))*Dt + Fpsi*sqrt(Dt);
         G(i+1) = G(i) + gamma*Dt*( (mu-G(i)) - G(i)*(Qp(i) + Qm(i)) - d(i)*(Qp(i) - Qm(i)) );
         d(i+1) = d(i) + Dt*(-gamma_d*d(i) -gamma*G(i)*(Qp(i) - Qm(i)) - gamma*d(i)*(Qp(i) + Qm(i)) );
+        if abs(G(i+1)) > 1000
+            disp("ALERT!")
+        end
     end
     
     Ep = sqrt(Qp).*exp(1i.*(phi + psi));
     Em = sqrt(Qm).*exp(1i.*(phi - psi));
     Ex = (Ep + Em)/sqrt(2);
     Ey = (Ep - Em)/sqrt(2)/1i;
-    
+    plot
     specx = abs(fftshift(fft(Ex))).^2;
     specy = abs(fftshift(fft(Ey))).^2;
-    specsx(j,:) = specx(floor(L/2-wnd):floor(L/2-wnd)+2*wnd-1);
-    specsy(j,:) = specy(floor(L/2-wnd):floor(L/2-wnd)+2*wnd-1);
+    specsx(j,:) = specx(floor(L/2-wnd):floor(L/2-wnd)+ceil(2*wnd-1));
+    specsy(j,:) = specy(floor(L/2-wnd):floor(L/2-wnd)+ceil(2*wnd-1));
 end
 toc;
 avspecx = mean(specsx);
 avspecy = mean(specsy);
 
-freqs = 2*pi*(-L/2:L/2-1)/L/Dt; 
-freqswnd = freqs(floor(L/2-wnd):floor(L/2-wnd)+2*wnd-1);
+
 
 plot(freqswnd, log(abs(avspecx)));
 hold on

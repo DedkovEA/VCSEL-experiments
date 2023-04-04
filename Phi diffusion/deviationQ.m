@@ -4,7 +4,7 @@
 alpha = 5;              % Linewidth enhancement factor
 kappa = 300;           % Field decay rate
 gamma = 1;            % Carrier decay rate
-gamma_d = 500;         % Spin-flip relaxation rate
+gamma_d = 1500;         % Spin-flip relaxation rate
 gamma_a = -0.1;         % Linear dichroism 
 gamma_p = 2*pi*32;          % Linear birefringence
 
@@ -15,7 +15,7 @@ N_th = 6.25e6;    % Carrier number at threshold
 N_tr = 5.935e6;        % Carrier number at transparency
 M = N_tr/(N_th - N_tr);
 
-Dt = 1e-5;          % Time step
+Dt = 3e-6;          % Time step
 T = 200;             % Time for solving in ns
 
 
