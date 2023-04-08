@@ -8,168 +8,181 @@ gamma_d = 1500;         % Spin-flip relaxation rate
 gamma_a = -0.1;         % Linear dichroism 
 gamma_p = 2*pi*32;          % Linear birefringence
 
-mu = 2;                  % Pump current
-
 C_sp = 1*10^-5;         % Intensety of noise
 N_th = 6.25e6;    % Carrier number at threshold
 N_tr = 5.935e6;        % Carrier number at transparency
 M = N_tr/(N_th - N_tr);
 
-Dt = 1e-5;          % Time step for solving in ns
-rnd_chunk_sz = ceil(1e6); % For each simulation process memory used will be 4 times larger
 
+mutilde = 1.5;
+mu = (mutilde*N_th - N_tr)/(N_th - N_tr);                  % Pump current
+
+
+Dt = 1e-6;          % Time step for solving in ns
+rnd_chunk_sz = ceil(1e6); % For each simulation process memory used will be 4 times larger
 
 %% Initializating variables---------------------------------------------
 
-AV = 20;                     % Number for samples to obtain average
+AV = 300;                     % Number for samples to obtain average
 T = 100;                      % Window
-offset = 0.5;                 % Window offset
+offset = 0.2;                 % Window offset
 
-tau = 1e-3;                   % Sampling time
+tau = 2e-4;                   % Sampling time
 tauDt = ceil(tau/Dt);
 tau = Dt*tauDt;                 % Real sampling time
-wndfreq = 2000;               % Spectra will be saved only in +-wmdfreq
-wnd = ceil(wndfreq*T/2/pi);
+wndfreq = pi/tau;               % Spectra will be saved only in +-wmdfreq
+wnd = floor(wndfreq*T/2/pi);
 
 L = round(T/tau);                      % Points N in spectre
+if wnd >= L/2
+    wnd = floor(L/2) -1;
+end
 
 wndslice = floor(L/2)+1-wnd:floor(L/2)+1+wnd;
 freqs = 2*pi*(-floor(L/2):ceil(L/2-1))/T; 
 freqswnd = freqs(wndslice);
 
+gds = logspace(1.7, 4.3, 8);
+mus = (N_th*linspace(1.1, 5, 8) - N_tr) / (N_th - N_tr);
+gdspecsx = zeros(length(gds), length(mus), length(freqswnd));
+gdspecsy = zeros(length(gds), length(mus), length(freqswnd));
 
-specsx = zeros(AV, length(freqswnd));
-specsy = zeros(AV, length(freqswnd));
-
+failnum = 0;
+LMUS = length(mus);
 tic
-% Initialization
-Qp_prev = 0;
-Qm_prev = 0;
-phi_prev = 0;
-psi_prev = 0;
-G_prev = 0;
-d_prev = 0;
-
-Q = (-gamma_a + kappa*(mu-1+2*M*C_sp) + sqrt(4*(2*C_sp-1)*kappa*mu*(gamma_a+kappa) + (gamma_a+kappa*(1+2*C_sp*M+mu))*(gamma_a+kappa*(1+2*C_sp*M+mu))) )/(4*(gamma_a+kappa));
-
-G_prev = mu/(1 + 2*Q);
-Qp_prev = Q;
-Qm_prev = Q;
-
-
-Lmat = [2*kappa*(G_prev-1), -8*Q*gamma_p, 4*kappa*(C_sp+Q);
-        gamma_p/2/Q, 2*gamma_a, alpha*kappa;
-        -G_prev*gamma, 0, -gamma_d-2*gamma*Q];
-cp = charpoly(Lmat);
-hurwitz = [cp(2), cp(4), cp(2)*cp(3)-cp(4)];
-if sum(hurwitz <= 0) > 0
-    psi_prev = pi/2;
-else
-    psi_prev = 0;
-end
-
-ns = 1;
-
-Ex = zeros(1,L); % X-LP mode
-Ey = zeros(1,L); % Y-LP mode
-
-ei = 1;
-ni = 1;
-ksi_plus = normrnd(0, 1, 1, rnd_chunk_sz);
-ksi_minus = normrnd(0, 1, 1, rnd_chunk_sz);
-ksi_phi = normrnd(0, 1, 1, rnd_chunk_sz);
-ksi_psi = normrnd(0, 1, 1, rnd_chunk_sz);
-
-d_from_prev = 0;
-while ns <= AV
-    if d_from_prev >= tauDt
-        d_from_prev = 0;
-        Ep = sqrt(Qp).*exp(1i.*(phi + psi));
-        Em = sqrt(Qm).*exp(1i.*(phi - psi));
-        Ex(ei) = (Ep + Em)/sqrt(2);
-        Ey(ei) = (Ep - Em)/sqrt(2)/1i;
-        ei = ei+1;
-        if ei >= L
-            specx = abs(fftshift(fft(Ex))).^2;
-            specy = abs(fftshift(fft(Ey))).^2;
-            specsx(ns,:) = specx(wndslice);
-            specsy(ns,:) = specy(wndslice);
-            ns = ns + 1;
-            ei = ceil(offset*L) + 1;
-            Ex(1:ceil(offset*L)) = Ex(end+1-ceil(offset*L):end);
-            Ey(1:ceil(offset*L)) = Ey(end+1-ceil(offset*L):end);
-        end
-    end
-
-    if ni > rnd_chunk_sz
-        ksi_plus = normrnd(0, 1, 1, rnd_chunk_sz);
-        ksi_minus = normrnd(0, 1, 1, rnd_chunk_sz);
-        ksi_phi = normrnd(0, 1, 1, rnd_chunk_sz);
-        ksi_psi = normrnd(0, 1, 1, rnd_chunk_sz);
-        ni = 1;
-    end
-
-    Fp = 2*sqrt(C_sp*kappa*Qp_prev*(G_prev+d_prev+M))*ksi_plus(ni);
-    Fm = 2*sqrt(C_sp*kappa*Qm_prev*(G_prev-d_prev+M))*ksi_minus(ni);
-    Fphi = 1/2*sqrt(C_sp*(G_prev+d_prev+M)/Qp_prev/2)*(ksi_phi(ni)+ksi_psi(ni)) + 1/2*sqrt(C_sp*(G_prev-d_prev+M)/Qm_prev/2)*(ksi_phi(ni)-ksi_psi(ni));
-    Fpsi = 1/2*sqrt(C_sp*(G_prev+d_prev+M)/Qp_prev/2)*(ksi_phi(ni)+ksi_psi(ni)) - 1/2*sqrt(C_sp*(G_prev-d_prev+M)/Qm_prev/2)*(ksi_phi(ni)-ksi_psi(ni));
-
-    Qp = Qp_prev + 2*( kappa*(G_prev+d_prev-1)*Qp_prev + kappa*C_sp*(G_prev+d_prev+M) - sqrt(Qp_prev*Qm_prev)*(gamma_a*cos(2*psi_prev) + gamma_p*sin(2*psi_prev) ) )*Dt + Fp*sqrt(Dt);
-    Qm = Qm_prev + 2*( kappa*(G_prev-d_prev-1)*Qm_prev + kappa*C_sp*(G_prev-d_prev+M) - sqrt(Qp_prev*Qm_prev)*(gamma_a*cos(2*psi_prev) - gamma_p*sin(2*psi_prev) ) )*Dt + Fm*sqrt(Dt);
-    phi = phi_prev + ( (G_prev-1)*alpha*kappa - 1/2/sqrt(Qm_prev*Qp_prev)*( (Qp_prev+Qm_prev)*gamma_p*cos(2*psi_prev) + (Qp_prev-Qm_prev)*gamma_a*sin(2*psi_prev) ))*Dt + Fphi*sqrt(Dt);
-    psi = psi_prev + (alpha*kappa*d_prev + 1/2/sqrt(Qm_prev*Qp_prev)*( (Qp_prev-Qm_prev)*gamma_p*cos(2*psi_prev) + (Qp_prev+Qm_prev)*gamma_a*sin(2*psi_prev) ))*Dt + Fpsi*sqrt(Dt);
-    G = G_prev + gamma*Dt*( (mu-G_prev) - G_prev*(Qp_prev + Qm_prev) - d_prev*(Qp_prev - Qm_prev) );
-    d = d_prev + Dt*(-gamma_d*d_prev -gamma*G_prev*(Qp_prev - Qm_prev) - gamma*d_prev*(Qp_prev + Qm_prev) );
+parfor jj = 1:length(gds)
+for kk = 1:LMUS
+    mu = mus(kk);
+    gamma_d = gds(jj);
+    specsx = zeros(AV, length(freqswnd));
+    specsy = zeros(AV, length(freqswnd));
     
-%     if Qp < 0 || Qm < 0
-%         nd = 100;
-%         ksi_plus_tmp = normrnd(0, 1, 1, nd);
-%         ksi_minus_tmp = normrnd(0, 1, 1, nd);
-%         ksi_phi_tmp = normrnd(0, 1, 1, nd);
-%         ksi_psi_tmp = normrnd(0, 1, 1, nd);
-%         for k = 1:nd
-%             Fp = 2*sqrt(C_sp*kappa*Qp_prev*(G_prev+d_prev+M))*ksi_plus_tmp(k);
-%             Fm = 2*sqrt(C_sp*kappa*Qm_prev*(G_prev-d_prev+M))*ksi_minus_tmp(k);
-%             Fphi = 1/2*sqrt(C_sp*(G_prev+d_prev+M)/Qp_prev/2)*(ksi_phi_tmp(k)+ksi_psi_tmp(k)) + 1/2*sqrt(C_sp*(G_prev-d_prev+M)/Qm_prev/2)*(ksi_phi_tmp(k)-ksi_psi_tmp(k));
-%             Fpsi = 1/2*sqrt(C_sp*(G_prev+d_prev+M)/Qp_prev/2)*(ksi_phi_tmp(k)+ksi_psi_tmp(k)) - 1/2*sqrt(C_sp*(G_prev-d_prev+M)/Qm_prev/2)*(ksi_phi_tmp(k)-ksi_psi_tmp(k));
-%         
-%             Qp = Qp_prev + 2*( kappa*(G_prev+d_prev-1)*Qp_prev + kappa*C_sp*(G_prev+d_prev+M) - sqrt(Qp_prev*Qm_prev)*(gamma_a*cos(2*psi_prev) + gamma_p*sin(2*psi_prev) ) )*Dt/nd + Fp*sqrt(Dt/nd);
-%             Qm = Qm_prev + 2*( kappa*(G_prev-d_prev-1)*Qm_prev + kappa*C_sp*(G_prev-d_prev+M) - sqrt(Qp_prev*Qm_prev)*(gamma_a*cos(2*psi_prev) - gamma_p*sin(2*psi_prev) ) )*Dt/nd + Fm*sqrt(Dt/nd);
-%             phi = phi_prev + ( (G_prev-1)*alpha*kappa - 1/2/sqrt(Qm_prev*Qp_prev)*( (Qp_prev+Qm_prev)*gamma_p*cos(2*psi_prev) + (Qp_prev-Qm_prev)*gamma_a*sin(2*psi_prev) ))*Dt/nd + Fphi*sqrt(Dt/nd);
-%             psi = psi_prev + (alpha*kappa*d_prev + 1/2/sqrt(Qm_prev*Qp_prev)*( (Qp_prev-Qm_prev)*gamma_p*cos(2*psi_prev) + (Qp_prev+Qm_prev)*gamma_a*sin(2*psi_prev) ))*Dt/nd + Fpsi*sqrt(Dt/nd);
-%             G = G_prev + gamma*Dt/nd*( (mu-G_prev) - G_prev*(Qp_prev + Qm_prev) - d_prev*(Qp_prev - Qm_prev) );
-%             d = d_prev + Dt/nd*(-gamma_d*d_prev -gamma*G_prev*(Qp_prev - Qm_prev) - gamma*d_prev*(Qp_prev + Qm_prev) );
-%             
-%             Qp_prev = Qp;
-%             Qm_prev = Qm;
-%             phi_prev = phi;
-%             psi_prev = psi;
-%             G_prev = G;
-%             d_prev = d;
-%         end
-%     end
+    % Initialization
+    Qp_prev = 0;
+    Qm_prev = 0;
+    phi_prev = 0;
+    psi_prev = 0;
+    G_prev = 0;
+    d_prev = 0;
+    
+    Q = (-gamma_a + kappa*(mu-1+2*M*C_sp) + sqrt(4*(2*C_sp-1)*kappa*mu*(gamma_a+kappa) + (gamma_a+kappa*(1+2*C_sp*M+mu))*(gamma_a+kappa*(1+2*C_sp*M+mu))) )/(4*(gamma_a+kappa));
+    
+    G_prev = mu/(1 + 2*Q);
+    Qp_prev = Q;
+    Qm_prev = Q;
+    
+    eval = true;
 
-    if abs(G) > 100
-        disp("ALERT!")
-        break
+    Lmat = [2*kappa*(G_prev-1), -8*Q*gamma_p, 4*kappa*(C_sp+Q);
+            gamma_p/2/Q, 2*gamma_a, alpha*kappa;
+            -G_prev*gamma, 0, -gamma_d-2*gamma*Q];
+    cp = charpoly(Lmat);
+    hurwitz = [cp(2), cp(4), cp(2)*cp(3)-cp(4)];
+    if sum(hurwitz <= 0) > 0
+        psi_prev = pi/2;
+        Lmat2 = [2*kappa*(G_prev-1), 8*Q*gamma_p, 4*kappa*(C_sp+Q);
+            -gamma_p/2/Q, -2*gamma_a, alpha*kappa;
+            -G_prev*gamma, 0, -gamma_d-2*gamma*Q];
+        cp2 = charpoly(Lmat2);
+        hurwitz2 = [cp2(2), cp2(4), cp2(2)*cp2(3)-cp2(4)];
+        if sum(hurwitz <= 0) > 0
+            disp("NOT STABLE")
+            disp(gds(jj))
+            disp(mus(kk))
+            eval = false;
+            failnum = failnum + 1;
+        end
+    else
+        psi_prev = 0;
+    end
+    
+
+    if eval
+
+
+    ns = 1;
+    
+    Ex = zeros(1,L); % X-LP mode
+    Ey = zeros(1,L); % Y-LP mode
+    
+    ei = 1;
+    ni = 1;
+    ksi_plus = normrnd(0, 1, 1, rnd_chunk_sz);
+    ksi_minus = normrnd(0, 1, 1, rnd_chunk_sz);
+    ksi_phi = normrnd(0, 1, 1, rnd_chunk_sz);
+    ksi_psi = normrnd(0, 1, 1, rnd_chunk_sz);
+    
+    d_from_prev = 0;
+    while ns <= AV
+        if d_from_prev >= tauDt
+            d_from_prev = 0;
+            Ep = sqrt(Qp).*exp(1i.*(phi + psi));
+            Em = sqrt(Qm).*exp(1i.*(phi - psi));
+            Ex(ei) = (Ep + Em)/sqrt(2);
+            Ey(ei) = (Ep - Em)/sqrt(2)/1i;
+            ei = ei+1;
+            if ei >= L
+                specx = abs(fftshift(fft(Ex))).^2;
+                specy = abs(fftshift(fft(Ey))).^2;
+                specsx(ns,:) = specx(wndslice);
+                specsy(ns,:) = specy(wndslice);
+                ns = ns + 1;
+                ei = ceil(offset*L) + 1;
+                Ex(1:ceil(offset*L)) = Ex(end+1-ceil(offset*L):end);
+                Ey(1:ceil(offset*L)) = Ey(end+1-ceil(offset*L):end);
+            end
+        end
+    
+        if ni > rnd_chunk_sz
+            ksi_plus = normrnd(0, 1, 1, rnd_chunk_sz);
+            ksi_minus = normrnd(0, 1, 1, rnd_chunk_sz);
+            ksi_phi = normrnd(0, 1, 1, rnd_chunk_sz);
+            ksi_psi = normrnd(0, 1, 1, rnd_chunk_sz);
+            ni = 1;
+        end
+    
+        Fp = 2*sqrt(C_sp*kappa*Qp_prev*(G_prev+d_prev+M))*ksi_plus(ni);
+        Fm = 2*sqrt(C_sp*kappa*Qm_prev*(G_prev-d_prev+M))*ksi_minus(ni);
+        Fphi = 1/2*sqrt(C_sp*(G_prev+d_prev+M)/Qp_prev/2)*(ksi_phi(ni)+ksi_psi(ni)) + 1/2*sqrt(C_sp*(G_prev-d_prev+M)/Qm_prev/2)*(ksi_phi(ni)-ksi_psi(ni));
+        Fpsi = 1/2*sqrt(C_sp*(G_prev+d_prev+M)/Qp_prev/2)*(ksi_phi(ni)+ksi_psi(ni)) - 1/2*sqrt(C_sp*(G_prev-d_prev+M)/Qm_prev/2)*(ksi_phi(ni)-ksi_psi(ni));
+    
+        Qp = Qp_prev + 2*( kappa*(G_prev+d_prev-1)*Qp_prev + kappa*C_sp*(G_prev+d_prev+M) - sqrt(Qp_prev*Qm_prev)*(gamma_a*cos(2*psi_prev) + gamma_p*sin(2*psi_prev) ) )*Dt + Fp*sqrt(Dt);
+        Qm = Qm_prev + 2*( kappa*(G_prev-d_prev-1)*Qm_prev + kappa*C_sp*(G_prev-d_prev+M) - sqrt(Qp_prev*Qm_prev)*(gamma_a*cos(2*psi_prev) - gamma_p*sin(2*psi_prev) ) )*Dt + Fm*sqrt(Dt);
+        phi = phi_prev + ( (G_prev-1)*alpha*kappa - 1/2/sqrt(Qm_prev*Qp_prev)*( (Qp_prev+Qm_prev)*gamma_p*cos(2*psi_prev) + (Qp_prev-Qm_prev)*gamma_a*sin(2*psi_prev) ))*Dt + Fphi*sqrt(Dt);
+        psi = psi_prev + (alpha*kappa*d_prev + 1/2/sqrt(Qm_prev*Qp_prev)*( (Qp_prev-Qm_prev)*gamma_p*cos(2*psi_prev) + (Qp_prev+Qm_prev)*gamma_a*sin(2*psi_prev) ))*Dt + Fpsi*sqrt(Dt);
+        G = G_prev + gamma*Dt*( (mu-G_prev) - G_prev*(Qp_prev + Qm_prev) - d_prev*(Qp_prev - Qm_prev) );
+        d = d_prev + Dt*(-gamma_d*d_prev -gamma*G_prev*(Qp_prev - Qm_prev) - gamma*d_prev*(Qp_prev + Qm_prev) );
+    
+        if abs(G) > 100
+            disp("ALERT!")
+            disp(gds(jj))
+            disp(mus(kk))
+            break
+        end
+    
+        Qp_prev = Qp;
+        Qm_prev = Qm;
+        phi_prev = phi;
+        psi_prev = psi;
+        G_prev = G;
+        d_prev = d;
+    
+        ni = ni + 1;
+        d_from_prev = d_from_prev + 1;
+    end
+    gdspecsx(jj, kk, :) = mean(specsx);
+    gdspecsy(jj, kk, :) = mean(specsy);
+
     end
 
-    Qp_prev = Qp;
-    Qm_prev = Qm;
-    phi_prev = phi;
-    psi_prev = psi;
-    G_prev = G;
-    d_prev = d;
-
-    ni = ni + 1;
-    d_from_prev = d_from_prev + 1;
+end
 end
 toc
-  
-avspecx = mean(specsx);
-avspecy = mean(specsy);
 
 
+
+% save("Dependence_on_gps.mat", "gds", "gdspecsx", "gdspecsy");
+save("Dependence_on_gds_mus.mat", "gds", "mus", "gdspecsx", "gdspecsy", "alpha", "kappa", "gamma_a", "gamma_p", "C_sp", "N_th", "N_tr", "Dt");
 
 
 
