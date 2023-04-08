@@ -17,6 +17,7 @@ M = N_tr/(N_th - N_tr);
 
 Dt = 1e-5;          % Time step
 T = 200;             % Time for solving in ns
+tau = 1e-3;         % sampling time
 
 
 %% Initializating variables---------------------------------------------
@@ -24,7 +25,7 @@ T = 200;             % Time for solving in ns
 time = 0:Dt:T;
 L = length(time);
 
-AV = 20;
+AV = 2;
 wnd = 100000;
 specsx = zeros(AV, 2*wnd);
 specsy = zeros(AV, 2*wnd);
@@ -89,8 +90,8 @@ for j = 1:AV
     Ex = (Ep + Em)/sqrt(2);
     Ey = (Ep - Em)/sqrt(2)/1i;
     
-    specx = abs(fftshift(fft(Ex))).^2;
-    specy = abs(fftshift(fft(Ey))).^2;
+    specx = abs(fftshift(fft(Ex(1:100:end)))).^2;
+    specy = abs(fftshift(fft(Ey(1:100:end)))).^2;
     specsx(j,:) = specx(floor(L/2-wnd):floor(L/2-wnd)+2*wnd-1);
     specsy(j,:) = specy(floor(L/2-wnd):floor(L/2-wnd)+2*wnd-1);
 end
