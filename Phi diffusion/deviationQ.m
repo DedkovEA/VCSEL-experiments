@@ -4,19 +4,19 @@
 alpha = 5;              % Linewidth enhancement factor
 kappa = 300;           % Field decay rate
 gamma = 1;            % Carrier decay rate
-gamma_d = 1500;         % Spin-flip relaxation rate
+gamma_d = 9.9526;         % Spin-flip relaxation rate
 gamma_a = -0.1;         % Linear dichroism 
 gamma_p = 2*pi*32;          % Linear birefringence
 
-mu = 2;                  % Pump current
+%mu = 2;                  % Pump current
 
 C_sp = 1*10^-5;         % Intensety of noise
 N_th = 6.25e6;    % Carrier number at threshold
 N_tr = 5.935e6;        % Carrier number at transparency
 M = N_tr/(N_th - N_tr);
 
-Dt = 3e-6;          % Time step
-T = 200;             % Time for solving in ns
+Dt = 1e-7;          % Time step
+T = 3;             % Time for solving in ns
 
 
 %% Initializating variables---------------------------------------------
@@ -74,6 +74,45 @@ for i = 1:1:L-1
     psi(i+1) = psi(i) + (alpha*kappa*d(i) + 1/2/sqrt(Qm(i)*Qp(i))*( (Qp(i)-Qm(i))*gamma_p*cos(2*psi(i)) + (Qp(i)+Qm(i))*gamma_a*sin(2*psi(i)) ))*Dt + Fpsi*sqrt(Dt);
     G(i+1) = G(i) + gamma*Dt*( (mu-G(i)) - G(i)*(Qp(i) + Qm(i)) - d(i)*(Qp(i) - Qm(i)) );
     d(i+1) = d(i) + Dt*(-gamma_d*d(i) -gamma*G(i)*(Qp(i) - Qm(i)) - gamma*d(i)*(Qp(i) + Qm(i)) );
+%     if Qp(i+1) < 0 || Qm(i+1) < 0
+%         nd = 10;
+%         ksi_plus_tmp = normrnd(0, 1, 1, nd);
+%         ksi_minus_tmp = normrnd(0, 1, 1, nd);
+%         ksi_phi_tmp = normrnd(0, 1, 1, nd);
+%         ksi_psi_tmp = normrnd(0, 1, 1, nd);
+%         Qp_prev = Qp(i);
+%         Qm_prev = Qm(i);
+%         psi_prev = psi(i);
+%         G_prev = G(i);
+%         d_prev = d(i);
+%         for k = 1:nd
+%             Fpn = 2*sqrt(C_sp*kappa*Qp_prev*(G_prev+d_prev+M))*ksi_plus_tmp(k);
+%             Fmn = 2*sqrt(C_sp*kappa*Qm_prev*(G_prev-d_prev+M))*ksi_minus_tmp(k);
+%             Fpsin = 1/2*sqrt(C_sp*(G_prev+d_prev+M)/Qp_prev/2)*(ksi_phi_tmp(k)+ksi_psi_tmp(k)) - 1/2*sqrt(C_sp*(G_prev-d_prev+M)/Qm_prev/2)*(ksi_phi_tmp(k)-ksi_psi_tmp(k));
+%         
+%             Qpn = Qp_prev + 2*( kappa*(G_prev+d_prev-1)*Qp_prev + kappa*C_sp*(G_prev+d_prev+M) - sqrt(Qp_prev*Qm_prev)*(gamma_a*cos(2*psi_prev) + gamma_p*sin(2*psi_prev) ) )*Dt/nd + Fpn*sqrt(Dt/nd);
+%             Qmn = Qm_prev + 2*( kappa*(G_prev-d_prev-1)*Qm_prev + kappa*C_sp*(G_prev-d_prev+M) - sqrt(Qp_prev*Qm_prev)*(gamma_a*cos(2*psi_prev) - gamma_p*sin(2*psi_prev) ) )*Dt/nd + Fmn*sqrt(Dt/nd);
+%             psin = psi_prev + (alpha*kappa*d_prev + 1/2/sqrt(Qm_prev*Qp_prev)*( (Qp_prev-Qm_prev)*gamma_p*cos(2*psi_prev) + (Qp_prev+Qm_prev)*gamma_a*sin(2*psi_prev) ))*Dt/nd + Fpsin*sqrt(Dt/nd);
+%             Gn = G_prev + gamma*Dt/nd*( (mu-G_prev) - G_prev*(Qp_prev + Qm_prev) - d_prev*(Qp_prev - Qm_prev) );
+%             dn = d_prev + Dt/nd*(-gamma_d*d_prev -gamma*G_prev*(Qp_prev - Qm_prev) - gamma*d_prev*(Qp_prev + Qm_prev) );
+%             
+%             Qp_prev = Qpn;
+%             Qm_prev = Qmn;
+%             psi_prev = psin;
+%             G_prev = Gn;
+%             d_prev = dn;
+%         end
+%         Qp(i+1) = Qpn;
+%         Qm(i+1) = Qmn;
+%         psi(i+1) = psin;
+%         G(i+1) = Gn;
+%         d(i+1) = dn;
+%     end
+
+    if abs(G(i+1)) > 100
+        disp("ALERT!")
+        break
+    end
 end
 
 toc;
@@ -165,12 +204,15 @@ toc;
 
 %% Plotting
 devPsi = std(psi(ceil(0.2*L):end))
-plot(time,Qp,'k',"LineWidth",1);
+
+slice = 1:100:L;
+
+plot(time(slice),Qp(slice),'k',"LineWidth",1);
 hold on;
-plot(time,Qm,'r');
-plot(time,psi,'b');
-plot(time,G,'k');
-plot(time,d,'m');
+plot(time(slice),Qm(slice),'r');
+plot(time(slice),psi(slice),'b');
+plot(time(slice),G(slice),'k');
+plot(time(slice),d(slice),'m');
 hold off;
 
 % tic;
