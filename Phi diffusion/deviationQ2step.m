@@ -15,7 +15,7 @@ N_th = 6.25e6;    % Carrier number at threshold
 N_tr = 5.935e6;        % Carrier number at transparency
 M = N_tr/(N_th - N_tr);
 
-Dt = 4e-7;          % Time step
+Dt = 1e-5;          % Time step
 T = 30;             % Time for solving in ns
 
 
@@ -64,16 +64,19 @@ Fp = 0; Fm = 0; Fpsi = 0;
 
 flag_noise = true;
 for i = 1:1:L-1
-    if(flag_noise)
-        Fp = 2*sqrt(C_sp*kappa*Qp(i)*(G(i)+d(i)+M))*ksi_plus(i);
-        Fm = 2*sqrt(C_sp*kappa*Qm(i)*(G(i)-d(i)+M))*ksi_minus(i);
-        Fpsi = 1/2*sqrt(C_sp*( (G(i)+d(i)+M)/Qp(i) + (G(i)-d(i)+M)/Qm(i) ))*ksi_psi(i);
-    end
-    Qp(i+1) = Qp(i) + 2*( kappa*(G(i)+d(i)-1)*Qp(i) + kappa*C_sp*(G(i)+d(i)+M) - sqrt(Qp(i)*Qm(i))*(gamma_a*cos(2*psi(i)) + gamma_p*sin(2*psi(i)) ) )*Dt + Fp*sqrt(Dt);
-    Qm(i+1) = Qm(i) + 2*( kappa*(G(i)-d(i)-1)*Qm(i) + kappa*C_sp*(G(i)-d(i)+M) - sqrt(Qp(i)*Qm(i))*(gamma_a*cos(2*psi(i)) - gamma_p*sin(2*psi(i)) ) )*Dt + Fm*sqrt(Dt);
-    psi(i+1) = psi(i) + (alpha*kappa*d(i) + 1/2/sqrt(Qm(i)*Qp(i))*( (Qp(i)-Qm(i))*gamma_p*cos(2*psi(i)) + (Qp(i)+Qm(i))*gamma_a*sin(2*psi(i)) ))*Dt + Fpsi*sqrt(Dt);
+    Qp(i+1) = Qp(i) + 2*( kappa*(G(i)+d(i)-1)*Qp(i) + kappa*C_sp*(G(i)+d(i)+M) - sqrt(Qp(i)*Qm(i))*(gamma_a*cos(2*psi(i)) + gamma_p*sin(2*psi(i)) ) )*Dt;
+    Qm(i+1) = Qm(i) + 2*( kappa*(G(i)-d(i)-1)*Qm(i) + kappa*C_sp*(G(i)-d(i)+M) - sqrt(Qp(i)*Qm(i))*(gamma_a*cos(2*psi(i)) - gamma_p*sin(2*psi(i)) ) )*Dt;
+    psi(i+1) = psi(i) + (alpha*kappa*d(i) + 1/2/sqrt(Qm(i)*Qp(i))*( (Qp(i)-Qm(i))*gamma_p*cos(2*psi(i)) + (Qp(i)+Qm(i))*gamma_a*sin(2*psi(i)) ))*Dt;
     G(i+1) = G(i) + gamma*Dt*( (mu-G(i)) - G(i)*(Qp(i) + Qm(i)) - d(i)*(Qp(i) - Qm(i)) );
     d(i+1) = d(i) + Dt*(-gamma_d*d(i) -gamma*G(i)*(Qp(i) - Qm(i)) - gamma*d(i)*(Qp(i) + Qm(i)) );
+    if(flag_noise)
+        Fp = 2*sqrt(C_sp*kappa*Qp(i+1)*(G(i+1)+d(i+1)+M))*ksi_plus(i);
+        Fm = 2*sqrt(C_sp*kappa*Qm(i+1)*(G(i+1)-d(i+1)+M))*ksi_minus(i);
+        Fpsi = 1/2*sqrt(C_sp*( (G(i+1)+d(i+1)+M)/Qp(i+1) + (G(i+1)-d(i+1)+M)/Qm(i+1) ))*ksi_psi(i);
+    end
+    Qp(i+1) = Qp(i+1) + Fp*sqrt(Dt);
+    Qm(i+1) = Qm(i+1) + Fm*sqrt(Dt);
+    psi(i+1) = psi(i+1) + Fpsi*sqrt(Dt);
 %     if Qp(i+1) < 0 || Qm(i+1) < 0
 %         nd = 10;
 %         ksi_plus_tmp = normrnd(0, 1, 1, nd);
@@ -215,12 +218,12 @@ plot(time(slice),G(slice),'k');
 plot(time(slice),d(slice),'m');
 hold off;
 
-Qx = abs(sqrt(Qp).*exp(1j*psi) + sqrt(Qm).*exp(-1j*psi)).^2/2;
-Qy = abs(sqrt(Qp).*exp(1j*psi) - sqrt(Qm).*exp(-1j*psi)).^2/2;
-plot(time(slice),Qx(slice),'r');
-hold on;
-plot(time(slice),Qy(slice),'b');
-hold off;
+% Qx = abs(sqrt(Qp).*exp(1j*psi) + sqrt(Qm).*exp(-1j*psi)).^2/2;
+% Qy = abs(sqrt(Qp).*exp(1j*psi) - sqrt(Qm).*exp(-1j*psi)).^2/2;
+% plot(time(slice),Qx(slice),'r');
+% hold on;
+% plot(time(slice),Qy(slice),'b');
+% hold off;
 
 % tic;
 % FindPsiStd(T, Dt, gamma, kappa, alpha, gamma_d, gamma_p, gamma_a, mu, C_sp, N_th, N_tr)

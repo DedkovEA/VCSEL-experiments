@@ -153,6 +153,10 @@ while ns <= AV
         disp("ALERT!")
         break
     end
+    if imag(Qp) > 1e-17
+        disp("ALERT!")
+        break
+    end
 
     Qp_prev = Qp;
     Qm_prev = Qm;
