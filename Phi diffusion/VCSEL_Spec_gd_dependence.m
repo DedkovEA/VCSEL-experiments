@@ -4,7 +4,7 @@
 alpha = 5;              % Linewidth enhancement factor
 kappa = 300;           % Field decay rate
 gamma = 1;            % Carrier decay rate
-gamma_d = 1500;         % Spin-flip relaxation rate
+gamma_d = 3000;         % Spin-flip relaxation rate
 gamma_a = -0.1;         % Linear dichroism 
 gamma_p = 2*pi*32;          % Linear birefringence
 
@@ -23,7 +23,7 @@ rnd_chunk_sz = ceil(1e6); % For each simulation process memory used will be 4 ti
 
 %% Initializating variables---------------------------------------------
 
-AV = 300;                     % Number for samples to obtain average
+AV = 4;                     % Number for samples to obtain average
 T = 100;                      % Window
 offset = 0.2;                 % Window offset
 
@@ -44,16 +44,17 @@ freqswnd = freqs(wndslice);
 
 gds = logspace(1.7, 4.3, 8);
 mus = (N_th*linspace(1.1, 5, 8) - N_tr) / (N_th - N_tr);
-gdspecsx = zeros(length(gds), length(mus), length(freqswnd));
-gdspecsy = zeros(length(gds), length(mus), length(freqswnd));
+gps = 2*pi*logspace(-2,2,8);
+specsx = zeros(length(gps), length(mus), length(freqswnd));
+specsy = zeros(length(gps), length(mus), length(freqswnd));
 
 failnum = 0;
 LMUS = length(mus);
 tic
-parfor jj = 1:length(gds)
+parfor jj = 1:length(gps)
 for kk = 1:LMUS
     mu = mus(kk);
-    gamma_d = gds(jj);
+    gamma_p = gps(jj);
     specsx = zeros(AV, length(freqswnd));
     specsy = zeros(AV, length(freqswnd));
     
@@ -87,7 +88,7 @@ for kk = 1:LMUS
         hurwitz2 = [cp2(2), cp2(4), cp2(2)*cp2(3)-cp2(4)];
         if sum(hurwitz <= 0) > 0
             disp("NOT STABLE")
-            disp(gds(jj))
+            disp(gps(jj))
             disp(mus(kk))
             eval = false;
             failnum = failnum + 1;
@@ -182,7 +183,7 @@ toc
 
 
 % save("Dependence_on_gps.mat", "gds", "gdspecsx", "gdspecsy");
-save("Dependence_on_gds_mus.mat", "gds", "mus", "gdspecsx", "gdspecsy", "alpha", "kappa", "gamma_a", "gamma_p", "C_sp", "N_th", "N_tr", "Dt");
+% save("Dependence_on_gds_mus_f.mat", "gds", "mus", "gdspecsx", "gdspecsy", "alpha", "kappa", "gamma_a", "gamma_p", "C_sp", "N_th", "N_tr", "Dt", "freqswnd");
 
 
 

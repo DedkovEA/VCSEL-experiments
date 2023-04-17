@@ -4,11 +4,11 @@
 alpha = 5;              % Linewidth enhancement factor
 kappa = 300;           % Field decay rate
 gamma = 1;            % Carrier decay rate
-gamma_d = 1500;         % Spin-flip relaxation rate
+gamma_d = 500;         % Spin-flip relaxation rate
 gamma_a = -0.1;         % Linear dichroism 
 gamma_p = 2*pi*32;          % Linear birefringence
 
-mu = 2;                  % Pump current
+mu = 60;                  % Pump current
 
 C_sp = 1*10^-5;         % Intensety of noise
 N_th = 6.25e6;    % Carrier number at threshold
@@ -16,7 +16,7 @@ N_tr = 5.935e6;        % Carrier number at transparency
 M = N_tr/(N_th - N_tr);
 
 Dt = 4e-7;          % Time step
-T = 30;             % Time for solving in ns
+T = 10;             % Time for solving in ns
 
 
 %% Initializating variables---------------------------------------------
@@ -219,6 +219,8 @@ Qx = abs(sqrt(Qp).*exp(1j*psi) + sqrt(Qm).*exp(-1j*psi)).^2/2;
 Qy = abs(sqrt(Qp).*exp(1j*psi) - sqrt(Qm).*exp(-1j*psi)).^2/2;
 plot(time(slice),Qx(slice),'r');
 hold on;
+plot(time(slice),G(slice),'k');
+plot(time(slice),psi(slice),'m');
 plot(time(slice),Qy(slice),'b');
 hold off;
 

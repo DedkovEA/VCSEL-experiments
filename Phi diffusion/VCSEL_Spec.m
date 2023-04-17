@@ -4,34 +4,37 @@
 alpha = 5;              % Linewidth enhancement factor
 kappa = 300;           % Field decay rate
 gamma = 1;            % Carrier decay rate
-gamma_d = 1500;         % Spin-flip relaxation rate
+gamma_d = 227;         % Spin-flip relaxation rate
 gamma_a = -0.1;         % Linear dichroism 
 gamma_p = 2*pi*32;          % Linear birefringence
 
-mu = 2;                  % Pump current
+mu = 110;                  % Pump current
 
 C_sp = 1*10^-5;         % Intensety of noise
 N_th = 6.25e6;    % Carrier number at threshold
 N_tr = 5.935e6;        % Carrier number at transparency
 M = N_tr/(N_th - N_tr);
 
-Dt = 1e-5;          % Time step for solving in ns
+Dt = 4e-7;          % Time step for solving in ns
 rnd_chunk_sz = ceil(1e6); % For each simulation process memory used will be 4 times larger
 
 
 %% Initializating variables---------------------------------------------
 
-AV = 20;                     % Number for samples to obtain average
+AV = 50;                     % Number for samples to obtain average
 T = 100;                      % Window
-offset = 0.5;                 % Window offset
+offset = 0.2;                 % Window offset
 
-tau = 1e-3;                   % Sampling time
+tau = 1e-4;                   % Sampling time
 tauDt = ceil(tau/Dt);
 tau = Dt*tauDt;                 % Real sampling time
-wndfreq = 2000;               % Spectra will be saved only in +-wmdfreq
-wnd = ceil(wndfreq*T/2/pi);
+wndfreq = pi/tau;       % Spectra will be saved only in +-wmdfreq
+wnd = floor(wndfreq*T/2/pi);
 
 L = round(T/tau);                      % Points N in spectre
+if wnd >= L/2
+    wnd = floor(L/2) -1;
+end
 
 wndslice = floor(L/2)+1-wnd:floor(L/2)+1+wnd;
 freqs = 2*pi*(-floor(L/2):ceil(L/2-1))/T; 
@@ -149,12 +152,12 @@ while ns <= AV
 %         end
 %     end
 
-    if abs(G) > 100
+    if abs(G) > 100*mu
         disp("ALERT!")
         break
     end
-    if imag(Qp) > 1e-17
-        disp("ALERT!")
+    if imag(Qp) > 1e-7
+        disp("ALERT! Qp")
         break
     end
 
