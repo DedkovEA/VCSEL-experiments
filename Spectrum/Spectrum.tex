@@ -1,0 +1,159 @@
+% \documentclass[12pt,a4paper]{article}
+\documentclass[12pt, notitlepage]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+
+\usepackage[left=1in, right=1in, top=1in, bottom=1in]{geometry}
+
+\usepackage{titling}
+%\usepackage{lipsum}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{float}
+%\usepackage[margin=2cm]{geometry}
+\usepackage{caption}
+\usepackage{dsfont}
+
+\pretitle{\begin{center}\Huge\bfseries}
+	\posttitle{\par\end{center}\vskip 0.5em}
+\preauthor{\begin{center}\Large\ttfamily}
+	\postauthor{\end{center}}
+\predate{\par\large\centering}
+\postdate{\par}
+
+\title{Polarization resolved spectrum of VCSEL}
+\author{Evgeniy Dedkov}
+\date{\today}
+\begin{document}
+	
+	\newcommand\scalemath[2]{\scalebox{#1}{\mbox{\ensuremath{\displaystyle #2}}}}
+	\newcommand{\F}{\boldsymbol{\mathfrak{F}}}
+	\newcommand{\n}{\boldsymbol{\mathfrak{n}}}
+	\newcommand{\N}{\boldsymbol{\mathcal{N}}}
+	\newcommand{\Q}{\mathcal{Q}}
+	\newcommand{\gp}{\gamma_{\parallel}}
+	\newcommand{\bV}{\boldsymbol{V}}
+	
+	\maketitle
+	\thispagestyle{empty}
+	
+	\begin{abstract}
+		This is attempt to evaluate spectrum of arbitrary VCSEL.
+	\end{abstract}
+	
+	\section{Basic equations}
+	We will start with the following rate equations of VCSEL:
+	\begin{gather}
+		\label{main_rate1}
+		\dot{\F_+} = \kappa(1+i\alpha)\left[G + d - 1\right] \F_+ - (\gamma_a + i\gamma_p) \F_- + \sqrt{\kappa C_{sp} (G+d+T)}(\xi_1^r + i\xi_1^i)\\
+		\dot{\F_-} = \kappa(1+i\alpha)\left[G - d - 1\right] \F_- - (\gamma_a + i\gamma_p) \F_+ + \sqrt{\kappa C_{sp} (G-d+T)}(\xi_2^r + i\xi_2^i)\\
+		\dot{G} = \gp\left(\mu-G\right) - \gp G(|\F_+|^2+|\F_-|^2) - \gp d(|\F_+|^2 - |\F_-|^2) \\
+		\label{main_rate4}
+		\dot{d} = -\gamma_d d - \gp G(|\F_+|^2-|\F_-|^2) - \gp d(|\F_+|^2+|\F_-|^2)
+	\end{gather}
+	where $T = \frac{N_{tr}}{N_{th} - N_{tr}}$ and $\xi_i^\alpha$ are Gaussian noises. 
+	
+	Since $G$ and $d$ are somehow coupled and $\F_\pm$ are complex, we will change variables to:
+	\begin{gather}
+		R_\pm = |\F_\pm| \\
+		\phi = \phi_+ - \omega t = \arg (\F_+) - \omega t \\
+		\psi = \phi_+ - \phi_- = \arg(\F_+) - \arg(\F_-) \\
+		N_+ = G+d \\
+		N_- = G-d
+	\end{gather}
+	where now $N_\pm$ are proportional to difference in population inversion associated with right and left polarized emissions.
+	
+	We also normalize $t$ to $\gp$, so that new $\tau = \gp t$ and now all decay rates are normalized on $\gp$ and $\omega \rightarrow \frac{\omega}{\gp}$.
+	
+	Finally, we obtain Langevin equation with drift and diffusion given by:
+	\begin{gather}
+		d\bV = \boldsymbol{\mu}(\bV) dt + \boldsymbol{\sigma}(\bV)d\boldsymbol{W}_t \\
+		\bV = \begin{pmatrix}
+			R_+ & R_- & \phi & \psi & N_+ & N_-
+		\end{pmatrix}^T \\
+		\boldsymbol{\mu}(\bV) = \begin{pmatrix}
+			\kappa (N_+ - 1) R_+ + \kappa\frac{C_{sp}(N_+ + T)}{2R_+} - R_- (\gamma_a \cos \psi + \gamma_p\sin\psi) \\
+			\kappa (N_- - 1) R_- + \kappa\frac{C_{sp}(N_- + T)}{2R_-} - R_+ (\gamma_a \cos \psi - \gamma_p\sin\psi) \\
+			\alpha\kappa(N_+ - 1) - \omega - \frac{R_-}{R_+}(\gamma_p\cos\psi - \gamma_a\sin\psi) \\
+			\alpha\kappa (N_+ - N_-) - \frac{R_-}{R_+}(\gamma_p\cos\psi - \gamma_a\sin\psi) + \frac{R_+}{R_-}(\gamma_p\cos\psi + \gamma_a\sin\psi) \\
+			\mu -\frac{1}{2}(1+4R_+^2 + \gamma_d)N_+ - \frac{1}{2}(\gamma_d - 1)N_- \\
+			\mu -\frac{1}{2}(1+4R_-^2 + \gamma_d)N_- - \frac{1}{2}(\gamma_d - 1)N_+ 
+		\end{pmatrix} \\
+	\boldsymbol{D} = \frac{1}{2}\boldsymbol{\sigma}\boldsymbol{\sigma}^T = \text{diag}\left\{ \frac{1}{2}\kappa C_{sp}(N_+ + T),\frac{1}{2}\kappa C_{sp}(N_- + T), \right.\\ \left. \begin{pmatrix}
+		\frac{1}{2 R_+^2}\kappa C_{sp} (N_+ + T) & \frac{1}{2 R_+^2}\kappa C_{sp} (N_+ + T) \\
+		\frac{1}{2 R_+^2}\kappa C_{sp} (N_+ + T) & \frac{1}{2 R_+^2}\kappa C_{sp} (N_+ + T) + \frac{1}{2 R_-^2}\kappa C_{sp} (N_- + T)
+	\end{pmatrix}, 0, 0 \right\} 
+%		\begin{pmatrix}
+%		\frac{1}{2}\kappa C_{sp}(N_+ + T) & 0 & 0 & 0 & 0 & 0 \\
+%		0 & \frac{1}{2}\kappa C_{sp}(N_- + T) & 0 & 0 & 0 & 0 \\
+%		0 & 0 & \frac{1}{2 R_+^2}\kappa C_{sp} (N_+ + T) & \frac{1}{2 R_+^2}\kappa C_{sp} (N_+ + T) & 0 & 0 \\
+%		0 & 0 & \frac{1}{2 R_+^2}\kappa C_{sp} (N_+ + T) & \frac{1}{2 R_+^2}\kappa C_{sp} (N_+ + T) + \frac{1}{2 R_-^2}\kappa C_{sp} (N_- + T) & 0 & 0 \\
+%		0  & 0 & 0 & 0 & 0 & 0 \\
+%		0  & 0 & 0 & 0 & 0 & 0
+%		\end{pmatrix}
+	\end{gather}
+	
+	It is well-known that such Langevin equation corresponds to the next Fokker-Planck one:
+	\begin{equation}
+		\label{FPeq}
+		\frac{\partial \Psi}{\partial t} = -\sum\limits_{i=1}^6 \frac{\partial}{\partial V_i} \mu_i\Psi + \sum\limits_{i,j=1}^6 \frac{\partial^2}{\partial V_i\partial V_j}D_{ij}\Psi
+	\end{equation}
+
+	\section{Expansion into complete set}
+Since equation~\eqref{FPeq} can not be solved analytically even in stationary case, we will follow Risken and expand solution into complete set:
+\newcommand{\Lagg}[3]{L_{#1}^{(#2)}\!\!\left(#3\right)}
+\begin{multline}
+	\Psi(R_+, R_-, \phi, \psi, N_+, N_-) =(2\pi)^{-2} e^{-x}e^{-y}e^{-u}e^{-v} \cdot \\ \cdot \sum\limits_{n,m,\rho,\sigma\in \mathbb{N}^0}\sum\limits_{\xi,\zeta\in\mathbb{Z}} C^{\xi, \zeta}_{n,m; \rho, \sigma}(t) e^{i\xi \phi} \cdot e^{i\zeta \psi} \cdot  x^{|\xi+\zeta|}\Lagg{n}{|\xi+\zeta|}{x} \cdot y^{|\zeta|}\Lagg{m}{|\zeta|}{y} \cdot
+	 u\Lagg{\rho}{1}{u} \cdot v\Lagg{\sigma}{1}{v}
+\end{multline}
+\begin{gather*}
+	R_+ = \alpha_+ x\\
+	R_- = \alpha_- y\\
+	N_+ = \beta_+ u \\
+	N_- = \beta_- v
+\end{gather*}
+
+The reasons are following: as we can see, equations and all observables are periodic on $\phi$ and $\psi$, so we need to expand in Fourier $2\pi$-periodic exponents. Absolute value of fields can obviously be only positive, so one need to expand in Laguerre polynomials. We get associated ones because integration with terms like $1/x$ will be needed. Moreover, we assume, that $N_\pm$ are also positive, which is true over and slightly under the threshold.
+
+If one somehow obtain coefficients $C^{\xi, \zeta}_{n,m; \rho, \sigma}(t)$ from initial stationary distribution\\ $C^{\xi, \zeta}_{n,m; \rho, \sigma}(0) = {}^0C^{\xi, \zeta}_{n,m; \rho, \sigma}$ then correlation functions can be expressed the following way:
+\begin{multline}
+	B_x(\tau) = \left< E_x^\dagger(t+\tau) E(t) \right> = \int dx\, dy\, du\, dv\, d\phi\, d\psi \int dx'\, dy'\, du'\, dv'\, d\phi'\, d\psi' \cdot \\ \cdot \left( \frac{\alpha_+ x' e^{-i\phi'} + \alpha_- y' e^{-i\phi'}e^{i\psi'}}{\sqrt{2}} \cdot  \frac{\alpha_+ x e^{i\phi} + \alpha_- y e^{i\phi}e^{-i\psi}}{\sqrt{2}}  \right) \cdot \\
+	\cdot (2\pi)^{-2} e^{-x}e^{-y}e^{-u}e^{-v} \cdot \\ \cdot \sum\limits_{n,m,\rho,\sigma\in \mathbb{N}^0}\sum\limits_{\xi,\zeta\in\mathbb{Z}} {}^0C^{\xi, \zeta}_{n,m; \rho, \sigma} e^{i\xi \phi} \cdot e^{i\zeta \psi} \cdot  x^{|\xi+\zeta|}\Lagg{n}{|\xi+\zeta|}{x} \cdot y^{|\zeta|}\Lagg{m}{|\zeta|}{y} \cdot
+	u\Lagg{\rho}{1}{u} \cdot v\Lagg{\sigma}{1}{v} \cdot \\
+	\cdot (2\pi)^{-2} e^{-x'}e^{-y'}e^{-u'}e^{-v'} \cdot \\ \cdot \sum\limits_{n',m',\rho',\tau'\in \mathbb{N}^0}\sum\limits_{\xi',\zeta'\in\mathbb{Z}} C^{\xi', \zeta'}_{n',m'; \rho', \sigma'}(\tau) e^{i\xi' \phi'} \cdot e^{i\zeta' \psi'} \cdot  x'^{|\xi'+\zeta'|}\Lagg{n'}{|\xi'+\zeta'|}{x'} \cdot y'^{|\zeta'|}\Lagg{m'}{|\zeta'|}{y'} \cdot
+	u'\Lagg{\rho}{1}{u'} \cdot v'\Lagg{\sigma'}{1}{v'}
+\end{multline}
+
+Here in brackets we have:
+\begin{multline}
+	\left( \frac{\alpha_+ x' e^{-i\phi'} + \alpha_- y' e^{-i\phi'}e^{i\psi'}}{\sqrt{2}} \cdot  \frac{\alpha_+ x e^{i\phi} + \alpha_- y e^{i\phi}e^{-i\psi}}{\sqrt{2}}  \right) =\\= \frac{1}{2}\left( \alpha_+^2 x x' e^{i\phi} e^{-i\phi'} + \alpha_+\alpha_- (x'y e^{-i\phi'} e^{i\phi} e^{-i\psi} + xy' e^{-i\phi'} e^{i\phi} e^{i\psi'}) + \alpha_-^2 yy'e^{-i\phi'} e^{i\phi} e^{i\psi'}e^{-i\psi} \right)
+\end{multline}
+
+After integration on $\phi^{(')}, \psi^{(')}, u^{(')}, v^{(')}$:
+\begin{multline}
+	B_x(\tau) = \frac{1}{2} \int dx\, dy\ \int dx'\, dy' \cdot e^{-x}e^{-y}e^{-x'}e^{-y'}\sum\limits_{n,m\in \mathbb{N}^0}\sum\limits_{n',m'\in \mathbb{N}^0} \\
+	\left( {}^0C^{-1, 0}_{n,m; 0, 0} C^{1, 0}_{n',m'; 0,0}(\tau)\alpha_+^2 xx' \cdot x\Lagg{n}{1}{x} \cdot \Lagg{m}{0}{y}\cdot x'\Lagg{n'}{1}{x'} \cdot \Lagg{m'}{0}{y'} + \right.\\
+	\left. {}^0C^{1, -1}_{n,m; 0, 0} C^{-1, 0}_{n',m'; 0,0}(\tau)\alpha_+\alpha_- x'y \cdot \Lagg{n}{0}{x} \cdot y\Lagg{m}{1}{y}\cdot x'\Lagg{n'}{1}{x'} \cdot \Lagg{m'}{0}{y'} + \right.\\
+	\left.  {}^0C^{1, 0}_{n,m; 0, 0} C^{-1, 1}_{n',m'; 0,0}(\tau)\alpha_+\alpha_- xy' \cdot x\Lagg{n}{1}{x} \cdot \Lagg{m}{0}{y}\cdot \Lagg{n'}{0}{x'} \cdot y'\Lagg{m'}{1}{y'} + \right.\\
+	\left. {}^0C^{1, -1}_{n,m; 0, 0} C^{-1, 1}_{n',m'; 0,0}(\tau)\alpha_-^2 yy' \cdot \Lagg{n}{0}{x} \cdot y\Lagg{m}{1}{y}\cdot \Lagg{n'}{0}{x'} \cdot y'\Lagg{m'}{1}{y'} \right)
+\end{multline}
+
+Using property:
+$$
+\Lagg{1}{\varkappa}{x} = -x + (\varkappa+1) => x = -\Lagg{1}{\varkappa}{x} - (\varkappa+1)\Lagg{0}{\varkappa}{x}
+$$
+and orthogonality of Laguerre polynomials
+$$
+\int x^\varkappa e^{-x} \Lagg{n}{\varkappa}{x}\Lagg{m}{\varkappa}{x} = \frac{\Gamma(n+\varkappa+1)}{n!}\delta_{nm}
+$$
+we finally obtain:
+\begin{multline}
+	B_x(\tau) = \frac{1}{2} \left[ \left( {}^0C^{-1, 0}_{1,0; 0, 0} C^{1, 0}_{1,0; 0,0}(\tau) + 2{}^0C^{-1, 0}_{1,0; 0, 0} C^{1, 0}_{0,0; 0,0}(\tau) + 2{}^0C^{-1, 0}_{1,0; 0, 0} C^{0, 0}_{1,0; 0,0}(\tau) + 4{}^0C^{-1, 0}_{0,0; 0, 0} C^{1, 0}_{0,0; 0,0}(\tau) \right)\alpha_+^2  + \right.\\
+	\left. dsa \right]
+\end{multline}
+
+\end{document}
