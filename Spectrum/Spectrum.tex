@@ -107,6 +107,7 @@
 Since equation~\eqref{FPeq} can not be solved analytically even in stationary case, we will follow Risken and expand solution into complete set:
 \newcommand{\Lagg}[3]{L_{#1}^{(#2)}\!\!\left(#3\right)}
 \begin{multline}
+	\label{expansion}
 	\Psi(R_+, R_-, \phi, \psi, N_+, N_-) =(2\pi)^{-2} e^{-x}e^{-y}e^{-u}e^{-v} \cdot \\ \cdot \sum\limits_{n,m,\rho,\sigma\in \mathbb{N}^0}\sum\limits_{\xi,\zeta\in\mathbb{Z}} C^{\xi, \zeta}_{n,m; \rho, \sigma}(t) e^{i\xi \phi} \cdot e^{i\zeta \psi} \cdot  x^{|\xi+\zeta|}\Lagg{n}{|\xi+\zeta|}{x} \cdot y^{|\zeta|}\Lagg{m}{|\zeta|}{y} \cdot
 	 u\Lagg{\rho}{1}{u} \cdot v\Lagg{\sigma}{1}{v}
 \end{multline}
@@ -118,6 +119,11 @@ Since equation~\eqref{FPeq} can not be solved analytically even in stationary ca
 \end{gather*}
 
 The reasons are following: as we can see, equations and all observables are periodic on $\phi$ and $\psi$, so we need to expand in Fourier $2\pi$-periodic exponents. Absolute value of fields can obviously be only positive, so one need to expand in Laguerre polynomials. We get associated ones because integration with terms like $1/x$ will be needed. Moreover, we assume, that $N_\pm$ are also positive, which is true over and slightly under the threshold.
+
+We use here Laguerre polynomials, defined as (Rodrigues formula):
+\begin{equation}
+	\Lagg{n}{\varkappa}{x} = \frac{x^{-\alpha}e^x}{n!}\frac{d^n}{dx^n}\left(e^{-x}x^{n+\alpha}\right)
+\end{equation}
 
 If one somehow obtain coefficients $C^{\xi, \zeta}_{n,m; \rho, \sigma}(t)$ from initial stationary distribution\\ $C^{\xi, \zeta}_{n,m; \rho, \sigma}(0) = {}^0C^{\xi, \zeta}_{n,m; \rho, \sigma}$ then correlation functions can be expressed the following way:
 \begin{multline}
@@ -144,7 +150,7 @@ After integration on $\phi^{(')}, \psi^{(')}, u^{(')}, v^{(')}$:
 
 Using property:
 $$
-\Lagg{1}{\varkappa}{x} = -x + (\varkappa+1) => x = -\Lagg{1}{\varkappa}{x} - (\varkappa+1)\Lagg{0}{\varkappa}{x}
+\Lagg{1}{\varkappa}{x} = -x + (\varkappa+1) \Rightarrow x = -\Lagg{1}{\varkappa}{x} + (\varkappa+1)\Lagg{0}{\varkappa}{x}
 $$
 and orthogonality of Laguerre polynomials
 $$
@@ -152,8 +158,61 @@ $$
 $$
 we finally obtain:
 \begin{multline}
-	B_x(\tau) = \frac{1}{2} \left[ \left( {}^0C^{-1, 0}_{1,0; 0, 0} C^{1, 0}_{1,0; 0,0}(\tau) + 2{}^0C^{-1, 0}_{1,0; 0, 0} C^{1, 0}_{0,0; 0,0}(\tau) + 2{}^0C^{-1, 0}_{1,0; 0, 0} C^{0, 0}_{1,0; 0,0}(\tau) + 4{}^0C^{-1, 0}_{0,0; 0, 0} C^{1, 0}_{0,0; 0,0}(\tau) \right)\alpha_+^2  + \right.\\
-	\left. dsa \right]
+	B_x(\tau) = 2 \left[ \left( {}^0C^{-1, 0}_{1,0; 0, 0} C^{1, 0}_{1,0; 0,0}(\tau) - {}^0C^{-1, 0}_{1,0; 0, 0} C^{1, 0}_{0,0; 0,0}(\tau) - {}^0C^{-1, 0}_{1,0; 0, 0} C^{0, 0}_{1,0; 0,0}(\tau) + {}^0C^{-1, 0}_{0,0; 0, 0} C^{1, 0}_{0,0; 0,0}(\tau) \right)\alpha_+^2  + \right.\\
+	\left. \left( {}^0C^{1, -1}_{0,1; 0, 0} C^{-1, 0}_{1,0; 0,0}(\tau) - {}^0C^{1, -1}_{0,0; 0, 0} C^{-1, 0}_{1,0; 0,0}(\tau) - {}^0C^{1, -1}_{0,1; 0, 0} C^{-1, 0}_{0,0; 0,0}(\tau) + {}^0C^{1, -1}_{0,0; 0, 0} C^{-1, 0}_{0,0; 0,0}(\tau) + \right.\right. \\
+	\left.\left. + {}^0C^{1, 0}_{1,0; 0, 0} C^{-1, 1}_{0,1; 0,0}(\tau) - {}^0C^{1, 0}_{0,0; 0, 0} C^{-1, 1}_{0,1; 0,0}(\tau) - {}^0C^{1, 0}_{1,0; 0, 0} C^{-1, 1}_{0,0; 0,0}(\tau) + {}^0C^{1, 0}_{0,0; 0, 0} C^{-1, 1}_{0,0; 0,0}(\tau) \right)\alpha_+\alpha_- + \right. \\
+	\left. \left( {}^0C^{1, -1}_{0,1; 0, 0} C^{-1, 1}_{0,1; 0,0}(\tau) - {}^0C^{1, -1}_{0,1; 0, 0} C^{-1, 1}_{0,0; 0,0}(\tau) - {}^0C^{1, -1}_{0,0; 0, 0} C^{-1, 1}_{0,1; 0,0}(\tau) + {}^0C^{1, -1}_{0,0; 0, 0} C^{-1, 1}_{0,0; 0,0}(\tau) \right)\alpha_-^2 \right]
 \end{multline}
 
+In order to obtain time dependence of $C^{\xi, \zeta}_{n,m; \rho, \sigma}(t)$ we will derive recurrence relation. For this purpose we put~\eqref{expansion} into~\eqref{FPeq}, then multiply on $e^{-i\xi \phi} \cdot e^{-i\zeta \psi} \cdot  \Lagg{n}{|\xi+\zeta|}{x} \cdot \Lagg{m}{|\zeta|}{y} \cdot
+\Lagg{\rho}{1}{u} \cdot \Lagg{\sigma}{1}{v}$ and integrate. In the left part then there will obviously be:
+\begin{equation}
+	\frac{(n+|\xi+\zeta|)!\,(m+|\zeta|)!\,(\rho+1)(\sigma+1)}{n!\,m!}\cdot \dot{C}^{\xi, \zeta}_{n,m; \rho, \sigma}(t)
+\end{equation}
+we further, however will divide everything on this common multiplier.
+
+It will be convenient to define next symbol:
+\newcommand{\tbV}{\tilde{\bV}}
+\begin{equation}
+	\Psi^{\xi,\zeta}_{n,\bullet;\bullet,\bullet}(\tbV) = \int d\phi\,d\psi\,dx \, e^{-i\xi\phi}e^{-i\zeta\psi}\Lagg{n}{|\xi+\zeta|}{x} \Psi(\tbV), \qquad \tbV = \left\{ x, y, \phi, \psi, u, v \right\}
+\end{equation}
+where we integrate all present variables with corresponding functions. Note that since functions in $x$ depend on both angles, we will avoid situations where no integration on angles are performed before the integration on $x$ or $y$ variable.
+
+Such integrals are in fact just normalized on some weight sums on $\bullet$ indices. And finally, after integration over all indices one can obtain:
+\begin{equation}
+	\Psi^{\xi,\zeta}_{n,m;\rho,\sigma}(\tbV) = \frac{(n+|\xi+\zeta|)!\,(m+|\zeta|)!\,(\rho+1)(\sigma+1)}{n!\,m!}\cdot C^{\xi, \zeta}_{n,m; \rho, \sigma}(t)
+\end{equation}
+
+
+Other steps will be performed separately for each individual term in Fokker-Planck equation. We also note, that the structure of this equation is convenient to perform integration by parts first. So all derivatives will migrate on corresponding function. We show it on the first example:
+\begin{multline}
+	-\int d\tbV e^{i\xi \phi} \cdot e^{i\zeta \psi} \cdot  \Lagg{n}{|\xi+\zeta|}{x} \cdot \Lagg{m}{|\zeta|}{y} \cdot
+	\Lagg{\rho}{1}{u} \cdot \Lagg{\sigma}{1}{v} \frac{\partial}{\partial R_+} \kappa (N_+ - 1) R_+ \Psi(\tbV) =\\
+	= -\kappa\int dx\,\Lagg{n}{|\xi+\zeta|}{x}\frac{\partial}{\partial x} x  \int du\, \Lagg{\rho}{1}{u} (\beta_+ u - 1)  \Psi^{\xi,\zeta}_{\bullet,m;\bullet,\sigma}(\tbV) =\\
+	= \kappa\int dx\,\frac{\partial}{\partial x}\left(\Lagg{n}{|\xi+\zeta|}{x}\right) x \left[ \beta_+(\rho + 1)\left(-\Psi^{\xi,\zeta}_{\bullet,m;\rho+1,\sigma}(\tbV) + 2\Psi^{\xi,\zeta}_{\bullet,m;\rho,\sigma}(\tbV) -\Psi^{\xi,\zeta}_{\bullet,m;\rho-1,\sigma}(\tbV)\right) - \right.\\
+	\left.- \Psi^{\xi,\zeta}_{\bullet,m;\rho,\sigma}(\tbV)\right] = \\=
+	\kappa\beta_+(\rho+1) n \left(-\Psi^{\xi,\zeta}_{n,m;\rho+1,\sigma}(\tbV) + 2\Psi^{\xi,\zeta}_{n,m;\rho,\sigma}(\tbV) -\Psi^{\xi,\zeta}_{n,m;\rho-1,\sigma}(\tbV)\right) - \kappa n \Psi^{\xi,\zeta}_{n,m;\rho,\sigma} -\\- \kappa\beta_+(\rho+1)(n+|\xi+\zeta|) \left(-\Psi^{\xi,\zeta}_{n-1,m;\rho+1,\sigma}(\tbV) + 2\Psi^{\xi,\zeta}_{n-1,m;\rho,\sigma}(\tbV) -\Psi^{\xi,\zeta}_{n-1,m;\rho-1,\sigma}(\tbV)\right) + \kappa (n+|\xi+\zeta|) \Psi^{\xi,\zeta}_{n-1,m;\rho,\sigma}
+\end{multline}
+
+Here we used identity from recurrence relation of Laguerres:
+$$
+x \Lagg{n}{\varkappa}{x} = -(n+1)\Lagg{n+1}{\varkappa}{x} + (2n+\varkappa+1)\Lagg{n}{\varkappa}{x} - (n+\varkappa)\Lagg{n-1}{\varkappa}{x}
+$$
+which in case $\varkappa = 1$ is:
+$$
+x \Lagg{n}{1}{x} = (n+1)(-\Lagg{n+1}{1}{x} + 2\Lagg{n}{1}{x} - \Lagg{n-1}{1}{x})
+$$
+
+and
+$$
+x\frac{d}{dx}\Lagg{n}{\varkappa}{x} = n\Lagg{n}{\varkappa}{x} - (n+\varkappa)\Lagg{n-1}{\varkappa}{x} \qquad \text{If lower index $<0$ then } \Lagg{k<0}{\varkappa}{x} = 0
+$$
+
+After normalization (division on $\Psi^{\xi,\zeta}_{n,m;\rho,\sigma}$):
+\begin{multline}
+	\kappa(N_+ -1)R_+ \rightarrow 
+	-\kappa\beta_+(\rho+2)n C^{\xi, \zeta}_{n,m; \rho+1, \sigma}(t) + \kappa n(2\beta_+(\rho+1) - 1)C^{\xi, \zeta}_{n,m; \rho, \sigma}(t) - \kappa\beta_+\rho n C^{\xi, \zeta}_{n,m; \rho-1, \sigma}(t) + \\
+	+ \kappa\beta_+(\rho+2)nC^{\xi, \zeta}_{n-1,m; \rho+1, \sigma}(t) - \kappa n(2\beta_+(\rho+1) - 1) C^{\xi, \zeta}_{n-1,m; \rho, \sigma}(t) + \kappa\beta_+\rho n C^{\xi, \zeta}_{n-1,m; \rho-1, \sigma}(t)
+\end{multline}
+And this was only first piece of terrible and horrible further calculations.
 \end{document}
