@@ -8,7 +8,7 @@ gamma_d = 500;         % Spin-flip relaxation rate
 gamma_a = -0.1;         % Linear dichroism 
 gamma_p = 2*pi*32;          % Linear birefringence
 
-mu = 60;                  % Pump current
+mu = 3;                  % Pump current
 
 C_sp = 1*10^-5;         % Intensety of noise
 N_th = 6.25e6;    % Carrier number at threshold
