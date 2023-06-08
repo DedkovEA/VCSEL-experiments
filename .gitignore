@@ -1,3 +1,6 @@
 *.gz
 *.log
 *.aux
+*.mat
+*.png
+*.pdf
