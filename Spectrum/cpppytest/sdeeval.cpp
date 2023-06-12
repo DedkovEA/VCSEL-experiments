@@ -286,6 +286,23 @@ void sdeeval() {
     floating sqrtDt = std::sqrt(Dt);
     floating sqrtkappa = std::sqrt(kappa);
 
+    // some memory allocations
+    floating U;
+    floating V;
+    floating ksi_plus;
+    floating ksi_minus;
+    floating ksi_phi;
+    floating ksi_psi;
+    floating C_plus;
+    floating C_minus;
+    floating sqrtQp;
+    floating sqrtQm;
+    floating Fp;
+    floating Fm;
+    floating Fphi;
+    floating Fpsi;
+    floating sqrtQpQm;
+
 
     // just for testing purpose open output file
     std::ofstream out("SDEsolution.txt", std::ios::out);
@@ -303,32 +320,32 @@ void sdeeval() {
             // floating ksi_psi = ndistr(gen);
 
             // MUCH FASTER
-            floating U = (float)gen() / gen.max();
-            floating V = (float)gen() / gen.max();
-            floating ksi_plus = std::sqrt(-2.*std::log(U));
-            floating ksi_minus = ksi_plus * std::sin(2*pi*V);
+            U = (floating)gen() / gen.max();
+            V = (floating)gen() / gen.max();
+            ksi_plus = std::sqrt(-2.*std::log(U));
+            ksi_minus = ksi_plus * std::sin(2*pi*V);
             ksi_plus *= std::cos(2*pi*V);
-            U = (float)gen() / gen.max();
-            V = (float)gen() / gen.max();
-            floating ksi_phi = std::sqrt(-2.*std::log(U));
-            floating ksi_psi = ksi_phi * std::sin(2*pi*V);
+            U = (floating)gen() / gen.max();
+            V = (floating)gen() / gen.max();
+            ksi_phi = std::sqrt(-2.*std::log(U));
+            ksi_psi = ksi_phi * std::sin(2*pi*V);
             ksi_phi *= std::cos(2*pi*V);
 
             // cache for forces
-            floating C_plus = std::sqrt(C_sp*(G_prev+d_prev+M));
-            floating C_minus = std::sqrt(C_sp*(G_prev-d_prev+M));
-            floating sqrtQp = std::sqrt(Qp_prev);
-            floating sqrtQm = std::sqrt(Qm_prev);
+            C_plus = std::sqrt(C_sp*(G_prev+d_prev+M));
+            C_minus = std::sqrt(C_sp*(G_prev-d_prev+M));
+            sqrtQp = std::sqrt(Qp_prev);
+            sqrtQm = std::sqrt(Qm_prev);
             // obtaining noise forces
-            floating Fp = 2.*sqrtkappa*sqrtQp*C_plus*ksi_plus;
-            floating Fm = 2.*sqrtkappa*sqrtQm*C_minus*ksi_minus;
-            floating Fphi = ONE_OVER_SQRT_8*C_plus/sqrtQp*(ksi_phi+ksi_psi) + 
+            Fp = 2.*sqrtkappa*sqrtQp*C_plus*ksi_plus;
+            Fm = 2.*sqrtkappa*sqrtQm*C_minus*ksi_minus;
+            Fphi = ONE_OVER_SQRT_8*C_plus/sqrtQp*(ksi_phi+ksi_psi) + 
                             ONE_OVER_SQRT_8*C_minus/sqrtQm*(ksi_phi-ksi_psi);
-            floating Fpsi = ONE_OVER_SQRT_8*C_plus/sqrtQp*(ksi_phi+ksi_psi) - 
+            Fpsi = ONE_OVER_SQRT_8*C_plus/sqrtQp*(ksi_phi+ksi_psi) - 
                             ONE_OVER_SQRT_8*C_minus/sqrtQm*(ksi_phi-ksi_psi);
 
             // performing step of Euler-Maruyama method
-            floating sqrtQpQm = sqrtQp*sqrtQm;
+            sqrtQpQm = sqrtQp*sqrtQm;
             Qp  = Qp_prev + 2.*( kappa*(G_prev+d_prev-1)*Qp_prev + kappa*C_sp*(G_prev+d_prev+M) - 
                   sqrtQpQm*(gamma_a*std::cos(2.*psi_prev-2*beta) + gamma_p*std::sin(2.*psi_prev) ) )*Dt + 
                   Fp*sqrtDt;
