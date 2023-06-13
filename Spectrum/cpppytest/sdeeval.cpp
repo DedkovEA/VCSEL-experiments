@@ -3,15 +3,19 @@
 #include <fstream>
 #include <chrono>
 #include <iostream>
+#include <complex>
+
+#include <iomanip>
 
 
 #define INTRINSIC_TYPE double
 #define ONE_OVER_SQRT_8 3.535533905932737e-01
 
 
-constexpr float pi = 3.14159265358979323846;
 
 typedef INTRINSIC_TYPE floating;
+typedef std::complex<floating> cfloating;
+
 
 
 class Matrix {
@@ -167,23 +171,27 @@ class Matrix {
 };
 
 
-void matrix_mult_to_second(const floating* const left, floating* const right, int n) {
-    floating* res = new floating[n*n];
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            res[n*i + j] = 0.;
-            for (int k = 0; k < n; k++) {
-                res[n*i + j] += left[n*i + k] * right[n*k + j];
+void fourier_transform(cfloating* data, cfloating* twist, int n) {
+    unsigned int xxor = 1u << n-1;
+    unsigned int step = 1u;
+    
+
+    for (int it = 0; it < n; it++) {
+        int base = 0;
+        for (int i = 1; i <= step; i++) {
+            for (int ind = 0; ind < xxor; ind++) {
+                cfloating tmp = data[base+ind];
+                data[base+ind] += data[base+ind+xxor];
+                data[base+ind+xxor] = tmp - data[base+ind+xxor];
+                data[base+ind+xxor] *= twist[ind*step];
             }
+            base += 2*xxor;
         }
+        xxor = xxor >> 1;
+        step = step << 1;
     }
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            right[n*i + j] = res[n*i + j];
-        }
-    }
-    delete [] res;
-};
+}
+
 
 void sdeeval() {
     floating alpha = 3.;
@@ -191,7 +199,7 @@ void sdeeval() {
     floating gamma = 1.;
     floating gamma_d = 1000.;
     floating gamma_a =  2.5;
-    floating gamma_p = 2*3.14159265*9;
+    floating gamma_p = 2*M_PI*9;
     floating beta = 0.;
     floating mu = 6.;
 
@@ -204,17 +212,21 @@ void sdeeval() {
 
     floating Dt = 1e-6;
     floating tau = 1e-4;
-    floating T = 50;
+    floating offset = 0.2;
+    int Npow = 16; 
+    int L = 1u << Npow;  // number of examined dots
 
     int tauDt = std::floor(tau/Dt);
     if (tauDt < 1) { tauDt = 1; };
     tau = tauDt * Dt;  // fix tau in order to make it right value
-    int N = std::ceil(T/Dt);  // total number of evaluating dots
-    int L = N / tauDt;  // number of exporting dots
 
+    floating T = L * tau;
+    int N = std::ceil(T/Dt);  // total number of evaluating dots
+    int skip = std::round(offset * L);  // how many dots will be skipped by offset
     
-    floating Qp = 0.4892;
-    floating Qm = 0.4892;
+    
+    floating Qp = 0.;
+    floating Qm = 0.;
     floating phi = 0.;
     floating psi = 0.;
     floating G = 1.;
@@ -266,7 +278,7 @@ void sdeeval() {
         if (charpoly2[1] < 0 || charpoly2[3] < 0 || charpoly2[1]*charpoly2[2] - charpoly2[3] < 0) {
             std::cout << "UNSTABLE SYSTEM\n";
         } else {
-            psi_prev = pi/2;
+            psi_prev = M_PI_2;
         };
     };
 
@@ -277,6 +289,17 @@ void sdeeval() {
     floating* G_out = new floating[L];
     floating* d_out = new floating[L];
 
+    cfloating* Ex = new cfloating[L];
+    cfloating* Ey = new cfloating[L];
+    cfloating* tmpEx = new cfloating[L];
+    cfloating* tmpEy = new cfloating[L];
+    floating* specx = new floating[L];
+    floating* specy = new floating[L];
+    for (int i = 0; i < L; i++) {
+        specx[i] = 0;
+        specy[i] = 0;
+    };
+
     // initializing random generator
     std::normal_distribution<double> ndistr(0.0, 1.0);
     std::random_device rd {};
@@ -285,6 +308,7 @@ void sdeeval() {
     // some cache
     floating sqrtDt = std::sqrt(Dt);
     floating sqrtkappa = std::sqrt(kappa);
+    constexpr cfloating M_I = cfloating(0., 1.);
 
     // some memory allocations
     floating U;
@@ -303,9 +327,36 @@ void sdeeval() {
     floating Fpsi;
     floating sqrtQpQm;
 
+    cfloating Epsq2;
+    cfloating Emsq2;
+
+
+    // preparing twist and bitreverse
+    cfloating* twist = new cfloating[1u << (Npow - 1)];
+    unsigned int* bitrev = new unsigned int [1u << Npow];
+
+    twist[0] = 1; 
+    for (int j = 1; j < (1u << (Npow-1)); j++) {
+        twist[j] = std::exp(cfloating(0., -M_PI/(1u << (Npow-1))*j));
+    }
+
+    for (int j = 0; j < (1u << Npow); j++) {
+        bitrev[j] = 0;
+        unsigned int tmpui = j;
+        for(int k = Npow-1; k >= 0; k--){
+         bitrev[j] |= (tmpui & 1) << k;
+         tmpui>>=1;
+      }
+    }
+
 
     // just for testing purpose open output file
     std::ofstream out("SDEsolution.txt", std::ios::out);
+    std::ofstream outRND("SDErandom.txt", std::ios::out);
+    std::ofstream outSPEC("SDEspec.txt", std::ios::out);
+    out << std::setprecision(16);
+    outRND << std::setprecision(16); 
+    outSPEC << std::setprecision(16); 
 
     for (int i = 0; i < L; i++) {
         for (int j = 0; j < tauDt; j++) {
@@ -323,13 +374,15 @@ void sdeeval() {
             U = (floating)gen() / gen.max();
             V = (floating)gen() / gen.max();
             ksi_plus = std::sqrt(-2.*std::log(U));
-            ksi_minus = ksi_plus * std::sin(2*pi*V);
-            ksi_plus *= std::cos(2*pi*V);
+            ksi_minus = ksi_plus * std::sin(2*M_PI*V);
+            ksi_plus *= std::cos(2*M_PI*V);
             U = (floating)gen() / gen.max();
             V = (floating)gen() / gen.max();
             ksi_phi = std::sqrt(-2.*std::log(U));
-            ksi_psi = ksi_phi * std::sin(2*pi*V);
-            ksi_phi *= std::cos(2*pi*V);
+            ksi_psi = ksi_phi * std::sin(2*M_PI*V);
+            ksi_phi *= std::cos(2*M_PI*V);
+
+            outRND << ksi_plus << " " << ksi_minus << " " << ksi_phi << " " << ksi_psi << "\n";
 
             // cache for forces
             C_plus = std::sqrt(C_sp*(G_prev+d_prev+M));
@@ -378,6 +431,27 @@ void sdeeval() {
         G_out[i] = G;
         d_out[i] = d;
         out << Qp << " " << Qm << " " << phi << " " << psi << " " << G << " " << d << "\n";
+
+        // evaluating fields in sample point
+        Epsq2 = M_SQRT1_2 * Qp * std::exp(cfloating(0., phi + psi));
+        Emsq2 = M_SQRT1_2 * Qm * std::exp(cfloating(0., phi - psi));
+        Ex[i] = Epsq2 + Emsq2;
+        Ey[i] = M_I * (Emsq2 - Epsq2);
+    };
+
+    // fft
+    for (int i = skip; i < L; i++) {
+        tmpEx[i-skip] = Ex[i];
+        tmpEy[i-skip] = Ey[i];
+    };
+    // obtain bit-reversed spectra
+    fourier_transform(Ex, twist, Npow);
+    fourier_transform(Ey, twist, Npow);
+    // adding to existing spectra
+    for (int i = 0; i < L; i++) {
+        specx[i] += std::norm(Ex[bitrev[i]]);
+        specy[i] += std::norm(Ey[bitrev[i]]);
+        outSPEC << specx[i] << " " << specy[i] << "\n";
     };
 };
 
