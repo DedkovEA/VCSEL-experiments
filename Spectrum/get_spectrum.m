@@ -9,7 +9,7 @@ gamma_a =  2.5 ;         % Linear dichroism    #1.34495
 gamma_p = 2*pi*9;          % Linear birefringence
 beta = 0%0.7  ;               % Angle between birefriginces
 
-mu = 2;                  % Pump current
+mu = 6;                  % Pump current
 
 C_sp = 5*10^-4;         % Intensety of noise
 N_th = 6.25e6;    % Carrier number at threshold
@@ -20,7 +20,7 @@ Dt = 1e-6;          % Time step for solving in ns
 rnd_chunk_sz = ceil(1e6); % For each simulation process memory used will be 4 times larger
 
 
-mu = (N_th*3.179 - N_tr)/(N_th - N_tr);
+%mu = (N_th*3.179 - N_tr)/(N_th - N_tr);
 % ang = 10^(-4.424);
 
 %% Initializating variables---------------------------------------------
@@ -168,13 +168,18 @@ tau = 2e-4;                   % Sampling time
 % plot(freqswnd, log10(specy));
 % hold off;
 
-tic
+
+tic;
 [specx,specy,freqs] = getspec(T, Dt, tau, rnd_chunk_sz, AV, offset, gamma, kappa, alpha, gamma_d, gamma_p, beta, gamma_a, mu, C_sp, N_th, N_tr);
-toc
+toc;
 
 sigma=0.75;
 gauss = 1/2/pi/sigma*exp(-freqs.^2/2/sigma^2);
 plot(freqs, log10(conv(specx,gauss,"same")), freqs, log10(conv(specy,gauss,"same")));
+
+
+
+
 % hold on;
 % ord = 19;
 % wnd = 21;
