@@ -25,7 +25,7 @@ mu = (N_th*3.179 - N_tr)/(N_th - N_tr);
 
 %% Initializating variables---------------------------------------------
 
-AV = 5;                     % Number for samples to obtain average
+AV = 10;                     % Number for samples to obtain average
 T = 10;                      % Window
 offset = 0.2;                 % Window offset
 
@@ -168,11 +168,18 @@ tau = 2e-4;                   % Sampling time
 % plot(freqswnd, log10(specy));
 % hold off;
 
+tic
 [specx,specy,freqs] = getspec(T, Dt, tau, rnd_chunk_sz, AV, offset, gamma, kappa, alpha, gamma_d, gamma_p, beta, gamma_a, mu, C_sp, N_th, N_tr);
+toc
 
 sigma=0.75;
-gauss = 1/2/pi/sigma*exp(-freqswnd.^2/2/sigma^2);
-plot(freqswnd, log10(conv(specx,gauss,"same")), freqswnd, log10(conv(specy,gauss,"same")));
+gauss = 1/2/pi/sigma*exp(-freqs.^2/2/sigma^2);
+plot(freqs, log10(conv(specx,gauss,"same")), freqs, log10(conv(specy,gauss,"same")));
+% hold on;
+% ord = 19;
+% wnd = 21;
+% plot(freqs, log10(sgolayfilt(conv(specx,gauss,"same"), ord, wnd)), freqs, log10(sgolayfilt(conv(specy,gauss,"same"), ord, wnd)));
+
 
 %save("TestVCSELspecWithStochastic.mat",'freqswnd','specx','specy','mu','kappa','alpha','gamma','gamma_d','gamma_a','gamma_p','C_sp','N_th','N_tr')
 
