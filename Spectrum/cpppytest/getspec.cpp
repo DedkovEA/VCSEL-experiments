@@ -241,6 +241,12 @@ void sdeeval(floating* specx, floating* specy, cfloating* Ex, cfloating* Ey, cfl
              floating alpha, floating kappa, floating gamma, floating gamma_d, floating gamma_a,                  // parameters
              floating gamma_p, floating beta, floating mu, floating C_sp, floating N_th, floating N_tr) {
 
+    // TODO:
+    // + return boolean value: true if success, false if there was NaN
+    // + Adaptive Dt step in order to avoid negative Qp/Qm
+    // * Test different approaches to RND sampling
+
+
     // define useful constants
     floating M = N_tr/(N_th - N_tr);
     int L = (1u << Npow);
@@ -378,11 +384,11 @@ void sdeeval(floating* specx, floating* specy, cfloating* Ex, cfloating* Ey, cfl
                     Fm*sqrtDt;
                 phi = phi_prev + ( (G_prev-1)*alpha*kappa - 
                     0.5/sqrtQpQm*( (Qp_prev+Qm_prev)*gamma_p*std::cos(2.*psi_prev) + 
-                                    (Qp_prev-Qm_prev)*gamma_a*std::sin(2.*psi_prev-2*beta) ))*Dt + 
+                                   (Qp_prev-Qm_prev)*gamma_a*std::sin(2.*psi_prev-2*beta) ))*Dt + 
                     Fphi*sqrtDt;
                 psi = psi_prev + (alpha*kappa*d_prev + 
                     0.5/sqrtQpQm*( (Qp_prev-Qm_prev)*gamma_p*std::cos(2.*psi_prev) +
-                                    (Qp_prev+Qm_prev)*gamma_a*std::sin(2.*psi_prev-2*beta) ))*Dt + 
+                                   (Qp_prev+Qm_prev)*gamma_a*std::sin(2.*psi_prev-2*beta) ))*Dt + 
                     Fpsi*sqrtDt;
                 G   = G_prev + gamma*Dt*( (mu-G_prev) - G_prev*(Qp_prev + Qm_prev) - d_prev*(Qp_prev - Qm_prev) );
                 d   = d_prev + Dt*(-gamma_d*d_prev -gamma*G_prev*(Qp_prev - Qm_prev) - gamma*d_prev*(Qp_prev + Qm_prev) );
@@ -393,6 +399,11 @@ void sdeeval(floating* specx, floating* specy, cfloating* Ex, cfloating* Ey, cfl
                 G_prev = G;
                 d_prev = d;
             };
+
+            if (std::isnan(Qp) || std::isnan(Qm) || std::isnan(phi) || std::isnan(psi) || std::isnan(G) || std::isnan(d)) {
+                std::cout << "NaN encountered. Aborting computation; av = " << av << ", i = " << i <<"\n";
+                return;
+            }
 
             // evaluating fields in sample point
             Epsq2 = M_SQRT1_2 * std::sqrt(Qp) * std::exp(cfloating(0., phi + psi));
@@ -418,7 +429,7 @@ void sdeeval(floating* specx, floating* specy, cfloating* Ex, cfloating* Ey, cfl
         // change Ei <-> tmpEi 
         std::swap<cfloating*>(Ex, tmpEx);
         std::swap<cfloating*>(Ey, tmpEy);
-        start = skip;
+        start = L - skip;
     };
 
     // averaging spectra
