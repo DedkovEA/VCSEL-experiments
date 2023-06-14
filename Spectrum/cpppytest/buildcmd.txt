@@ -1,0 +1,1 @@
+g++ -o getspec.dll getspec.cpp -O2 -s -shared -static-libstdc++ -D ADD_EXPORTS
