@@ -216,6 +216,7 @@ cfloating* reserve_twists(int Npow) {
     return twist;
 }; 
 
+// internally shifts fft, so zero frequency now at 2^(Npow-1) place
 unsigned int* reserve_bitrev(int Npow) {
     unsigned int* bitrev = new unsigned int [1u << Npow];
     for (int j = 0; j < (1u << Npow); j++) {
@@ -224,7 +225,8 @@ unsigned int* reserve_bitrev(int Npow) {
         for(int k = Npow-1; k >= 0; k--){
          bitrev[j] |= (tmpui & 1) << k;
          tmpui>>=1;
-      }
+        }
+        bitrev[j] = bitrev[j] ^ (1u << (Npow-1));
     }
     return bitrev;
 };
@@ -464,8 +466,8 @@ void sdeeval(floating* specx, floating* specy, cfloating* Ex, cfloating* Ey, cfl
         fourier_transform(Ey, twist, Npow);
         // adding to existing spectra
         for (int i = 0; i < L; i++) {
-            specx[i] += std::norm(Ex[bitrev[i]]);
-            specy[i] += std::norm(Ey[bitrev[i]]);
+            specx[bitrev[i]] += std::norm(Ex[i]);
+            specy[bitrev[i]] += std::norm(Ey[i]);
         };
         // change Ei <-> tmpEi 
         std::swap<cfloating*>(Ex, tmpEx);
