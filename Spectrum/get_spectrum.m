@@ -7,9 +7,9 @@ gamma = 1;            % Carrier decay rate
 gamma_d = 1000;         % Spin-flip relaxation rate
 gamma_a =  2.5 ;         % Linear dichroism    #1.34495
 gamma_p = 2*pi*9;          % Linear birefringence
-beta = 0%0.7  ;               % Angle between birefriginces
+beta = -0.3%0.7  ;               % Angle between birefriginces
 
-mu = 6;                  % Pump current
+mu = 53;                  % Pump current
 
 C_sp = 5*10^-4;         % Intensety of noise
 N_th = 6.25e6;    % Carrier number at threshold

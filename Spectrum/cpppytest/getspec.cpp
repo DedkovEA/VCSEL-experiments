@@ -236,10 +236,10 @@ void free_uint_array(unsigned int* ptr) {
 
 // Main function
 
-void sdeeval(floating* specx, floating* specy, cfloating* Ex, cfloating* Ey, cfloating* tmpEx, cfloating* tmpEy,  // arrays for SDE samples and output spectras 
+bool sdeeval(floating* specx, floating* specy, cfloating* Ex, cfloating* Ey, cfloating* tmpEx, cfloating* tmpEy,  // arrays for SDE samples and output spectras 
              cfloating* twist, unsigned int* bitrev, int Npow, int skip, int Nav, int tauDt, floating Dt,            // some necessary variables
              floating alpha, floating kappa, floating gamma, floating gamma_d, floating gamma_a,                  // parameters
-             floating gamma_p, floating beta, floating mu, floating C_sp, floating N_th, floating N_tr) {
+             floating gamma_p, floating beta, floating mu, floating C_sp, floating N_rel) {
 
     // TODO:
     // + return boolean value: true if success, false if there was NaN
@@ -248,7 +248,7 @@ void sdeeval(floating* specx, floating* specy, cfloating* Ex, cfloating* Ey, cfl
 
 
     // define useful constants
-    floating M = N_tr/(N_th - N_tr);
+    floating M = N_rel/(1.0 - N_rel);
     int L = (1u << Npow);
 
     // variables for SDE solver run   
@@ -402,7 +402,7 @@ void sdeeval(floating* specx, floating* specy, cfloating* Ex, cfloating* Ey, cfl
 
             if (std::isnan(Qp) || std::isnan(Qm) || std::isnan(phi) || std::isnan(psi) || std::isnan(G) || std::isnan(d)) {
                 std::cout << "NaN encountered. Aborting computation; av = " << av << ", i = " << i <<"\n";
-                return;
+                return false;
             }
 
             // evaluating fields in sample point
@@ -438,4 +438,6 @@ void sdeeval(floating* specx, floating* specy, cfloating* Ex, cfloating* Ey, cfl
             specy[i] /= Nav;
             //outSPEC << specx[i] << " " << specy[i] << "\n";
     };
+
+    return true;
 };
