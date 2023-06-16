@@ -15,8 +15,9 @@ if wnd >= L/2
     wnd = floor(L/2) -1;
 end
 
-wndslice = floor(L/2)+1-wnd:floor(L/2)+1+wnd;
-freqs = (-floor(L/2):ceil(L/2-1))/T; 
+
+freqs = linspace(-1/2/tau, 1/2/tau, L); 
+wndslice = [1:length(freqs)];
 freqswnd = freqs(wndslice);
 
 
@@ -105,8 +106,11 @@ while ns <= AV
 
     Fp = 2*sqrt(C_sp*kappa*Qp_prev*(G_prev+d_prev+M))*ksi_plus(ni);
     Fm = 2*sqrt(C_sp*kappa*Qm_prev*(G_prev-d_prev+M))*ksi_minus(ni);
-    Fphi = 1/2*sqrt(C_sp*(G_prev+d_prev+M)/Qp_prev/2)*(ksi_phi(ni)+ksi_psi(ni)) + 1/2*sqrt(C_sp*(G_prev-d_prev+M)/Qm_prev/2)*(ksi_phi(ni)-ksi_psi(ni));
-    Fpsi = 1/2*sqrt(C_sp*(G_prev+d_prev+M)/Qp_prev/2)*(ksi_phi(ni)+ksi_psi(ni)) - 1/2*sqrt(C_sp*(G_prev-d_prev+M)/Qm_prev/2)*(ksi_phi(ni)-ksi_psi(ni));
+    % Fphi = 1/2*sqrt(C_sp*(G_prev+d_prev+M)/Qp_prev/2)*(ksi_phi(ni)+ksi_psi(ni)) + 1/2*sqrt(C_sp*(G_prev-d_prev+M)/Qm_prev/2)*(ksi_phi(ni)-ksi_psi(ni));
+    % Fpsi = 1/2*sqrt(C_sp*(G_prev+d_prev+M)/Qp_prev/2)*(ksi_phi(ni)+ksi_psi(ni)) - 1/2*sqrt(C_sp*(G_prev-d_prev+M)/Qm_prev/2)*(ksi_phi(ni)-ksi_psi(ni));
+    Fphi = 1/2*sqrt(C_sp*kappa*(G_prev+d_prev+M)/Qp_prev)*ksi_phi(ni) + 1/2*sqrt(C_sp*kappa*(G_prev-d_prev+M)/Qm_prev)*ksi_psi(ni);
+    Fpsi = 1/2*sqrt(C_sp*kappa*(G_prev+d_prev+M)/Qp_prev)*ksi_phi(ni) - 1/2*sqrt(C_sp*kappa*(G_prev-d_prev+M)/Qm_prev)*ksi_psi(ni);
+
 
     Qp = Qp_prev + 2*( kappa*(G_prev+d_prev-1)*Qp_prev + kappa*C_sp*(G_prev+d_prev+M) - sqrt(Qp_prev*Qm_prev)*(gamma_a*cos(2*psi_prev-2*beta) + gamma_p*sin(2*psi_prev) ) )*Dt + Fp*sqrt(Dt);
     Qm = Qm_prev + 2*( kappa*(G_prev-d_prev-1)*Qm_prev + kappa*C_sp*(G_prev-d_prev+M) - sqrt(Qp_prev*Qm_prev)*(gamma_a*cos(2*psi_prev-2*beta) - gamma_p*sin(2*psi_prev) ) )*Dt + Fm*sqrt(Dt);

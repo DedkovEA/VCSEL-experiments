@@ -4,7 +4,7 @@
 alpha = 3;              % Linewidth enhancement factor
 kappa = 80;           % Field decay rate
 gamma = 1;            % Carrier decay rate
-gamma_d = 1000;         % Spin-flip relaxation rate
+gamma_d = 2000;         % Spin-flip relaxation rate
 gamma_a =  2.5 ;         % Linear dichroism    #1.34495
 gamma_p = 2*pi*9;          % Linear birefringence
 beta = -0.3%0.7  ;               % Angle between birefriginces
@@ -14,6 +14,20 @@ mu = 53;                  % Pump current
 C_sp = 5*10^-4;         % Intensety of noise
 N_th = 6.25e6;    % Carrier number at threshold
 N_tr = 5.935e6;        % Carrier number at transparency
+
+% alpha = 8.459689837908757;
+% kappa = 420.74434119698077;
+% gamma_d = 1754.0577428695992;
+% gamma_a = 99.1165417163582;
+% gamma_p = 1220.0123080538688;
+% beta = -3.1258367372397484;
+% mutilde = 3.57653791130186;
+% mu = 4.0085814827868695;
+% C_sp = 1.737463682029687e-05;
+% N_rel = 0.1436037461364698;
+% N_tr = N_th * N_rel;
+
+
 M = N_tr/(N_th - N_tr);
 
 Dt = 1e-6;          % Time step for solving in ns
@@ -25,11 +39,12 @@ rnd_chunk_sz = ceil(1e6); % For each simulation process memory used will be 4 ti
 
 %% Initializating variables---------------------------------------------
 
-AV = 10;                     % Number for samples to obtain average
-T = 10;                      % Window
+AV = 3;                     % Number for samples to obtain average
+tau = 1e-4;                   % Sampling time
+T = 2^16*tau;                      % Window
 offset = 0.2;                 % Window offset
 
-tau = 2e-4;                   % Sampling time
+
 % tauDt = ceil(tau/Dt);
 % tau = Dt*tauDt;                 % Real sampling time
 % wndfreq = pi/tau;               % Spectra will be saved only in +-wmdfreq

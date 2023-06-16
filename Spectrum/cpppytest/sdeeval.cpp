@@ -414,10 +414,12 @@ void sdeeval(floating* specx, floating* specy, cfloating* Ex, cfloating* Ey, cfl
                 // obtaining noise forces
                 Fp = 2.*sqrtkappa*sqrtQp*C_plus*ksi_plus;
                 Fm = 2.*sqrtkappa*sqrtQm*C_minus*ksi_minus;
-                Fphi = ONE_OVER_SQRT_8*C_plus/sqrtQp*(ksi_phi+ksi_psi) + 
-                                ONE_OVER_SQRT_8*C_minus/sqrtQm*(ksi_phi-ksi_psi);
-                Fpsi = ONE_OVER_SQRT_8*C_plus/sqrtQp*(ksi_phi+ksi_psi) - 
-                                ONE_OVER_SQRT_8*C_minus/sqrtQm*(ksi_phi-ksi_psi);
+                // Fphi = ONE_OVER_SQRT_8*C_plus/sqrtQp*(ksi_phi+ksi_psi) + 
+                //                 ONE_OVER_SQRT_8*C_minus/sqrtQm*(ksi_phi-ksi_psi);
+                // Fpsi = ONE_OVER_SQRT_8*C_plus/sqrtQp*(ksi_phi+ksi_psi) - 
+                //                 ONE_OVER_SQRT_8*C_minus/sqrtQm*(ksi_phi-ksi_psi);
+                Fphi = 0.5 * (C_plus * sqrtkappa / sqrtQp * ksi_phi + C_minus * sqrtkappa / sqrtQm * ksi_psi);
+                Fpsi = 0.5 * (C_plus * sqrtkappa / sqrtQp * ksi_phi - C_minus * sqrtkappa / sqrtQm * ksi_psi);
 
                 // performing step of Euler-Maruyama method
                 sqrtQpQm = sqrtQp*sqrtQm;
