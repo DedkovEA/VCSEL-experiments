@@ -1,0 +1,97 @@
+% \documentclass[12pt,a4paper]{article}
+\documentclass[12pt, notitlepage]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+
+\usepackage[left=1in, right=1in, top=1in, bottom=1in]{geometry}
+
+\usepackage{titling}
+%\usepackage{lipsum}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{float}
+%\usepackage[margin=2cm]{geometry}
+\usepackage{caption}
+\usepackage{dsfont}
+
+
+
+\pretitle{\begin{center}\Huge\bfseries}
+	\posttitle{\par\end{center}\vskip 0.5em}
+\preauthor{\begin{center}\Large\ttfamily}
+	\postauthor{\end{center}}
+\predate{\par\large\centering}
+\postdate{\par}
+
+\title{SFM fix for nonparallel anisotropies}
+\author{Evgeniy Dedkov}
+\date{\today}
+\begin{document}
+		\maketitle
+	\thispagestyle{empty}
+	
+	\begin{abstract}
+		This material derives advanced SFM equations in case of nonparallel linear dichroism and birefringence
+	\end{abstract}
+	
+	\section{Derivation of linear dichroism}
+	Lets assume, that $\gamma_p$ is included in SFM equations like it was previously. In this case we will assume, that tensor $\hat{\gamma}_a$ is diagonal in axes, which form an angle $\beta$ with initial axes. In rotated coordinate system:
+	\begin{equation}
+		\hat{\gamma}'_a = \begin{pmatrix}
+			-\gamma_a & 0\\
+			0 & \gamma_a
+			\end{pmatrix}
+	\end{equation}
+	So in laboratory coordinates, tensor of linear dichroism become:
+	\begin{equation}
+		\hat{\gamma}_a =\begin{pmatrix}
+			\cos \beta & -\sin \beta \\
+			\sin \beta & \cos \beta
+		\end{pmatrix} \begin{pmatrix}
+			-\gamma_a & 0\\
+			0 & \gamma_a
+		\end{pmatrix} \begin{pmatrix}
+			\cos \beta & \sin \beta \\
+			-\sin \beta & \cos \beta
+		\end{pmatrix} = \gamma_a \begin{pmatrix}
+			-\cos 2\beta & -\sin 2\beta \\
+			-\sin 2\beta & \cos 2\beta
+		\end{pmatrix}
+	\end{equation}
+
+So, we need to add 
+\begin{equation}
+	\Delta_a = \hat{\gamma}_a\begin{pmatrix}
+		E_x \\
+		E_y
+	\end{pmatrix}
+\end{equation}
+to the SFM equations.
+
+If we now change basis from $E_{x,y}$ to $E_\pm = \frac{1}{2}\left(E_x \pm iE_y\right)$, we should add transformed terms to corresponding equations of $E_\pm$:
+\begin{equation}
+	\tilde{\Delta}_a = 	\hat{S}\hat{\gamma}_a\hat{S}^{-1}\begin{pmatrix}
+		E_+ \\
+		E_-
+	\end{pmatrix} = -\gamma_a \begin{pmatrix}
+0 & e^{2 i \beta }\\
+e^{-2 i \beta } & 0 \\
+ \end{pmatrix}
+\end{equation}
+where $S = \frac{1}{\sqrt{2}}\left(\begin{smallmatrix}1 & i \\ 1 & -i\end{smallmatrix}\right)$
+
+
+\section{SFM equations}
+Fixed equations will then be:
+\begin{gather}
+	\dot{E_+} = \frac{1}{2\tau_{ph}}(1+i\alpha)\left[G_L - 1+ \frac{d}{N_{th} - N_{tr}}\right] E_+ - (\gamma_a e^{2i\beta} + i\gamma_p) E_- \\
+	\dot{E_-} = \frac{1}{2\tau_{ph}}(1+i\alpha)\left[G_L - 1- \frac{d}{N_{th} - N_{tr}}\right] E_- - (\gamma_a e^{-2i\beta}  + i\gamma_p) E_+ \\
+	\dot{N} = \frac{I}{e} - \frac{N}{\tau_e} - \frac{G_L}{\tau_{ph}}(|E_+|^2+|E_-|^2) - \frac{1}{\tau_{ph}}\frac{d}{N_{th} - N_{tr}}(|E_+|^2 - |E_-|^2)\\
+	\dot{d} = -\frac{1}{\tau_d} d -  \frac{G_L}{\tau_{ph}}(|E_+|^2-|E_-|^2) - \frac{1}{\tau_{ph}}\frac{d}{N_{th} - N_{tr}}(|E_+|^2+|E_-|^2)
+\end{gather}
+
+\end{document}
