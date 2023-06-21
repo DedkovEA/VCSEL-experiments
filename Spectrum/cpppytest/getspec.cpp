@@ -236,9 +236,9 @@ void free_uint_array(unsigned int* ptr) {
 
 // Main function
 
-bool sdeeval(floating* specx, floating* specy, cfloating* Ex, cfloating* Ey, cfloating* tmpEx, cfloating* tmpEy,  // arrays for SDE samples and output spectras 
-             cfloating* twist, unsigned int* bitrev, int Npow, int skip, int Nav, int tauDt, floating Dt,            // some necessary variables
-             floating alpha, floating kappa, floating gamma, floating gamma_d, floating gamma_a,                  // parameters
+bool sdeeval(floating* specx, floating* specy, cfloating* Ex, cfloating* Ey, cfloating* tmpEx, cfloating* tmpEy,            // arrays for SDE samples and output spectras 
+             cfloating* twist, unsigned int* bitrev, int Npow, int skip, int Nav, int tauDt, floating Dt,                   // some necessary variables
+             floating alpha, floating kappa, floating gamma, floating gamma_d, floating gamma_a,                            // parameters
              floating gamma_p, floating beta, floating mu, floating C_sp, floating N_rel) {
 
     // TODO:
@@ -289,6 +289,8 @@ bool sdeeval(floating* specx, floating* specy, cfloating* Ex, cfloating* Ey, cfl
         charpoly[k] = - 1./k * ((LLmat*MMmat).trace());
     };
 
+
+    bool is_unstable = false;
     if (charpoly[1] < 0 || charpoly[3] < 0 || charpoly[1]*charpoly[2] - charpoly[3] < 0) {
         floating Lmat2[9] = {2.f*kappa*(G_prev-1.f), 8.f*Q*gamma_p, 4.f*kappa*(C_sp+Q),
                              -gamma_p/2.f/Q, -2.f*gamma_a, alpha*kappa,
@@ -303,7 +305,8 @@ bool sdeeval(floating* specx, floating* specy, cfloating* Ex, cfloating* Ey, cfl
         if (charpoly2[1] < 0 || charpoly2[3] < 0 || charpoly2[1]*charpoly2[2] - charpoly2[3] < 0) {
             psi_prev = M_PI_2;
             std::cout << "UNSTABLE SYSTEM\n";
-            return false;
+            // return false;
+            is_unstable = true;
         } else {
             psi_prev = M_PI_2;
         };
@@ -443,5 +446,6 @@ bool sdeeval(floating* specx, floating* specy, cfloating* Ex, cfloating* Ey, cfl
             //outSPEC << specx[i] << " " << specy[i] << "\n";
     };
 
+    if (is_unstable) { return false; };
     return true;
 };

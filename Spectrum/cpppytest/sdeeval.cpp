@@ -371,10 +371,10 @@ void sdeeval(floating* specx, floating* specy, cfloating* Ex, cfloating* Ey, cfl
 
 
     // just for testing purpose open output file
-    // std::ofstream out("SDEsolution.txt", std::ios::out);
+    std::ofstream out("SDEsolution.txt", std::ios::out);
     // std::ofstream outRND("SDErandom.txt", std::ios::out);
     // std::ofstream outSPEC("SDEspec.txt", std::ios::out);
-    // out << std::setprecision(16);
+    out << std::setprecision(16);
     // outRND << std::setprecision(16); 
     // outSPEC << std::setprecision(16); 
 
@@ -448,7 +448,7 @@ void sdeeval(floating* specx, floating* specy, cfloating* Ex, cfloating* Ey, cfl
             };
 
             // Saving sample point
-            // out << Qp << " " << Qm << " " << phi << " " << psi << " " << G << " " << d << "\n";
+            out << Qp << " " << Qm << " " << phi << " " << psi << " " << G << " " << d << "\n";
 
             // evaluating fields in sample point
             Epsq2 = M_SQRT1_2 * std::sqrt(Qp) * std::exp(cfloating(0., phi + psi));
@@ -486,16 +486,16 @@ void sdeeval(floating* specx, floating* specy, cfloating* Ex, cfloating* Ey, cfl
 };
 
 int main() {
-    floating alpha = 3.;
-    floating kappa = 80.;
+    floating alpha = 4.;
+    floating kappa = 300.;
     floating gamma = 1.;
-    floating gamma_d = 1000.;
+    floating gamma_d = 1500.;
     floating gamma_a =  2.5;
-    floating gamma_p = 2*M_PI*9;
-    floating beta = 0.;
-    floating mu = 6.;
+    floating gamma_p = 2*M_PI*40;
+    floating beta = 0.2;
+    floating mu = 20.;
 
-    floating C_sp = 5e-4;
+    floating C_sp = 5e-5;
     floating N_th = 6.25e6;
     floating N_tr = 5.935e6;
 

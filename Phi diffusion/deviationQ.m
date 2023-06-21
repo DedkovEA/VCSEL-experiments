@@ -15,7 +15,7 @@ N_th = 6.25e6;    % Carrier number at threshold
 N_tr = 5.935e6;        % Carrier number at transparency
 M = N_tr/(N_th - N_tr);
 
-Dt = 4e-7;          % Time step
+Dt = 1e-6;          % Time step
 T = 10;             % Time for solving in ns
 
 

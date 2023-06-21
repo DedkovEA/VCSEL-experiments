@@ -46,9 +46,9 @@ ADDAPI void ADDCALL free_array(floating* ptr);
 ADDAPI void ADDCALL free_uint_array(unsigned int* ptr);
 
 
-ADDAPI bool ADDCALL sdeeval(floating* specx, floating* specy, cfloating* Ex, cfloating* Ey, cfloating* tmpEx, cfloating* tmpEy,  // arrays for SDE samples and output spectras 
-                            cfloating* twist, unsigned int* bitrev, int Npow, int skip, int Nav, int tauDt, floating Dt,            // some necessary variables
-                            floating alpha, floating kappa, floating gamma, floating gamma_d, floating gamma_a,                  // parameters
+ADDAPI bool ADDCALL sdeeval(floating* specx, floating* specy, cfloating* Ex, cfloating* Ey, cfloating* tmpEx, cfloating* tmpEy,         // arrays for SDE samples and output spectras 
+                            cfloating* twist, unsigned int* bitrev, int Npow, int skip, int Nav, int tauDt, floating Dt,                // some necessary variables
+                            floating alpha, floating kappa, floating gamma, floating gamma_d, floating gamma_a,                         // parameters
                             floating gamma_p, floating beta, floating mu, floating C_sp, floating N_rel);
 
 
